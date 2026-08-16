@@ -1,0 +1,266 @@
+# =========================================================
+# Flutter / Dart / Pub
+# =========================================================
+
+.dart_tool/
+.pub/
+.pub-cache/
+.pub-cache/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Generated documentation
+**/doc/api/
+
+# Generated build files
+/build/
+**/build/
+
+# Coverage
+/coverage/
+
+# Generated Flutter files
+**/ios/Flutter/.last_build_id
+
+# Flutter generated plugin registrant
+.flutter-plugins-dependencies
+
+
+# =========================================================
+# Dart
+# =========================================================
+
+*.class
+*.log
+*.pyc
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Dart tool / generated files
+.packages
+pubspec.lock
+
+
+# =========================================================
+# IDE / Editors
+# =========================================================
+
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+.vscode/
+
+# Cursor
+.cursor/
+
+# JetBrains
+*.shelf
+
+
+# =========================================================
+# OS / System
+# =========================================================
+
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Windows thumbnail cache
+[Tt]humbs.db
+
+
+# =========================================================
+# Flutter / Android
+# =========================================================
+
+/android/.gradle/
+/android/local.properties
+/android/**/GeneratedPluginRegistrant.java
+
+# Android build outputs
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Gradle
+.gradle/
+**/.gradle/
+
+# APK / AAB
+*.apk
+*.aab
+*.apks
+
+# Android signing files
+*.jks
+*.keystore
+
+
+# =========================================================
+# iOS / macOS
+# =========================================================
+
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+
+# Xcode
+**/ios/Pods/
+**/macos/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+
+# Xcode user files
+*.xcuserstate
+xcuserdata/
+
+# Xcode DerivedData
+DerivedData/
+
+# Xcode archives
+*.xcarchive
+
+
+# =========================================================
+# Linux
+# =========================================================
+
+**/linux/flutter/ephemeral/
+
+
+# =========================================================
+# Windows
+# =========================================================
+
+**/windows/flutter/ephemeral/
+
+
+# =========================================================
+# Web
+# =========================================================
+
+# Generated web build
+/web/build/
+
+
+# =========================================================
+# Firebase
+# =========================================================
+
+# Firebase local emulator data
+.firebase/
+
+# Firebase emulator exports
+firebase-export/
+
+# Firebase debug logs
+firebase-debug.log
+firebase-debug.*.log
+
+# Firebase local cache
+.firebaserc.local
+
+# Firebase Admin SDK service account credentials
+service-account.json
+serviceAccount.json
+service-account-key.json
+firebase-adminsdk-*.json
+*-firebase-adminsdk-*.json
+
+# Generic private keys
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Firebase / Google credentials
+google-credentials.json
+firebase-credentials.json
+credentials.json
+
+
+# =========================================================
+# Environment / Secrets
+# =========================================================
+
+.env
+.env.*
+!.env.example
+
+# Local configuration
+*.local
+*.local.json
+*.local.yaml
+*.local.yml
+
+# Secret / credential files
+secrets.json
+secrets.yaml
+secrets.yml
+config.local.json
+config.local.yaml
+config.local.yml
+
+
+# =========================================================
+# API / Authentication Secrets
+# =========================================================
+
+*secret*
+*secrets*
+*credential*
+*credentials*
+
+# NOTE:
+# Be careful with these broad patterns.
+# If a legitimate source file contains "secret" in its name,
+# Git will ignore it.
+
+
+# =========================================================
+# Logs / Temporary files
+# =========================================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# =========================================================
+# Generated / Temporary
+# =========================================================
+
+*.generated.dart
+*.g.dart
+
+# Uncomment these ONLY if your project generates them
+# and you don't want them tracked.
+
+
+# =========================================================
+# Miscellaneous
+# =========================================================
+
+.atom/
+.build/
+.buildlog/
+.history/
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# Symbolication
+app.*.symbols
+
+# Obfuscation
+app.*.map.json
