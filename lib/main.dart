@@ -1,23 +1,17 @@
 import 'dart:ui';
 
 import 'package:apple_store/constants/myColor.dart';
+import 'package:apple_store/di/di.dart';
 import 'package:apple_store/screens/basket_screen.dart';
 import 'package:apple_store/screens/home_screen.dart';
 import 'package:apple_store/screens/product_list_screen.dart';
 import 'package:apple_store/screens/profile_screen.dart';
+import 'package:apple_store/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
-void main() {
-  var array = [1, 2, 3, 4, 5];
-  try {
-    print(array[10]);
-  } on RangeError {
-    print('selected index out of range');
-  } catch (ex) {
-    print(ex);
-    print('error');
-  }
-  // runApp(const MyApp());
+void main() async {
+  await getItInit();
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -36,8 +30,9 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         backgroundColor: Mycolor.backgroundScreenColor,
 
-        // body: BasketScreen(),
-        body: IndexedStack(index: selectedScreen, children: getScreens()),
+        body: RegisterScreen(),
+        // body: IndexedStack(index: selectedScreen, children: getScreens(),
+        // ),
         bottomNavigationBar: ClipRRect(
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
