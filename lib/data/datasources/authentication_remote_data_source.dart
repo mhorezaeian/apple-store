@@ -1,6 +1,7 @@
 import 'package:apple_store/data/datasources/authentication_data_source.dart';
 import 'package:apple_store/di/di.dart';
 import 'package:apple_store/utils/api_exception.dart';
+import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 class AuthenticationRemoteDataSource implements AuthenticationDataSource {
@@ -29,6 +30,28 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       );
     } catch (ex) {
       print('///////////////////error///////////');
+      throw ApiException(code: 123, message: '${ex.toString()}');
+    }
+  }
+
+  @override
+  Future<String> login(String username, String password) async {
+    try {
+      final response = await _dio.post(
+        'collections/users/auth-with-password',
+        data: {'identity': username, 'password': password},
+      );
+      if (response.statusCode == 200) {
+        return response.data?['token'];
+      } else {
+        return "error on login";
+      }
+    } on DioException catch (ex) {
+      throw ApiException(
+        code: ex.response?.statusCode ?? 000,
+        message: ex.response?.data?.toString() ?? " error",
+      );
+    } catch (ex) {
       throw ApiException(code: 123, message: '${ex.toString()}');
     }
   }

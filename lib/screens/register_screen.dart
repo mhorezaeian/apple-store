@@ -14,7 +14,11 @@ class RegisterScreen extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () async {
-                var either = await AuthenticationRemoteRepository().register();
+                var either = await AuthenticationRemoteRepository().register(
+                  'liusername',
+                  '123456789',
+                  '123456789',
+                );
                 either.fold(
                   (left) {
                     print(left);
@@ -26,6 +30,25 @@ class RegisterScreen extends StatelessWidget {
               },
 
               child: Text('ثبت نام'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var either = await AuthenticationRemoteRepository().login(
+                  'liusername',
+                  '123456789',
+                );
+                either.fold(
+                  (left) {
+                    print(left);
+                  },
+                  (right) {
+                    print(right);
+                    print('شما وارد شدید');
+                  },
+                );
+              },
+
+              child: Text('ورود'),
             ),
           ],
         ),

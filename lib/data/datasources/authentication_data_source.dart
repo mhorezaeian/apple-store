@@ -4,4 +4,5 @@ abstract class AuthenticationDataSource {
     String password,
     String passwordConfirm,
   );
+  Future<String> login(String username, String password);
 }
