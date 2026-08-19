@@ -1,12 +1,13 @@
 import 'package:apple_store/data/datasources/authentication_data_source.dart';
-import 'package:apple_store/data/datasources/authentication_remote_data_source.dart';
 import 'package:apple_store/data/repositories/authentication_repository.dart';
 import 'package:apple_store/di/di.dart';
 import 'package:apple_store/utils/api_exception.dart';
 import 'package:dartz/dartz.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthenticationRemoteRepository implements AuthenticationRepository {
   final _datasource = locator.get<AuthenticationDataSource>();
+  // final _sharedPref = locator.get<SharedPreferences>();
   @override
   Future<Either<String, String>> register(
     String username,
@@ -28,7 +29,8 @@ class AuthenticationRemoteRepository implements AuthenticationRepository {
     try {
       var token = await _datasource.login(username, password);
       if (token.isNotEmpty) {
-        return right(token);
+        // _sharedPref.setString('access_token', token);
+        return right('شما با موفقیت وارد شدید');
       } else {
         return left("خطاد");
       }

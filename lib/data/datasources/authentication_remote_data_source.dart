@@ -1,7 +1,6 @@
 import 'package:apple_store/data/datasources/authentication_data_source.dart';
 import 'package:apple_store/di/di.dart';
 import 'package:apple_store/utils/api_exception.dart';
-import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
 class AuthenticationRemoteDataSource implements AuthenticationDataSource {
@@ -30,7 +29,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       );
     } catch (ex) {
       print('///////////////////error///////////');
-      throw ApiException(code: 123, message: '${ex.toString()}');
+      throw ApiException(code: 123, message: ex.toString());
     }
   }
 
@@ -52,7 +51,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
         message: ex.response?.data?.toString() ?? " error",
       );
     } catch (ex) {
-      throw ApiException(code: 123, message: '${ex.toString()}');
+      throw ApiException(code: 123, message: ex.toString());
     }
   }
 }

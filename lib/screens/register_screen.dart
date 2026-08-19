@@ -1,6 +1,6 @@
-import 'package:apple_store/data/datasources/authentication_remote_data_source.dart';
 import 'package:apple_store/data/repositories/authentication_remote_repository.dart';
 import 'package:flutter/material.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
@@ -37,6 +37,9 @@ class RegisterScreen extends StatelessWidget {
                   'liusername',
                   '123456789',
                 );
+                // var shared = locator.get<SharedPreferences>();
+                print('///////////access_token/////////////');
+                // print(shared.getString('acsess_token'));
                 either.fold(
                   (left) {
                     print(left);
