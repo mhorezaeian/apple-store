@@ -10,7 +10,7 @@ import 'package:apple_store/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   await getItInit();
 
