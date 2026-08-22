@@ -1,8 +1,6 @@
 import 'package:apple_store/data/repositories/authentication_remote_repository.dart';
-import 'package:apple_store/di/di.dart';
 import 'package:apple_store/utils/autth_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

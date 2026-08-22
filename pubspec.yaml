@@ -41,7 +41,7 @@ dependencies:
 
   shared_preferences: ^2.5.5
   hive: ^2.2.3
-  
+
   
 
   # The following adds the Cupertino Icons font to your application.

@@ -4,9 +4,9 @@ import 'package:apple_store/constants/myColor.dart';
 import 'package:apple_store/di/di.dart';
 import 'package:apple_store/screens/basket_screen.dart';
 import 'package:apple_store/screens/home_screen.dart';
+import 'package:apple_store/screens/login_screen.dart';
 import 'package:apple_store/screens/product_list_screen.dart';
 import 'package:apple_store/screens/profile_screen.dart';
-import 'package:apple_store/screens/register_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
@@ -33,7 +33,7 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         backgroundColor: Mycolor.backgroundScreenColor,
 
-        body: RegisterScreen(),
+        body: LoginScreen(),
         // body: IndexedStack(index: selectedScreen, children: getScreens(),
         // ),
         bottomNavigationBar: ClipRRect(
