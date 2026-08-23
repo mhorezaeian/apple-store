@@ -1,5 +1,9 @@
+import 'package:apple_store/bloc/authentication/auth_bloc.dart';
+import 'package:apple_store/bloc/authentication/auth_event.dart';
+import 'package:apple_store/bloc/authentication/auth_state.dart';
 import 'package:apple_store/constants/myColor.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -9,8 +13,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(create: ((context) => AuthBloc()), child: LoginView());
+  }
+}
+
+class LoginView extends StatefulWidget {
+  final _usernameController = TextEditingController(text: 'ssmamade12');
+  final _passwordController = TextEditingController(text: '12345678');
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     final keyboardHeight = MediaQuery.viewInsetsOf(context).bottom;
@@ -73,8 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisSize: MainAxisSize.max,
 
                           children: [
+                            SizedBox(height: 10),
                             TextField(
-                              controller: _usernameController,
+                              controller: widget._usernameController,
                               decoration: InputDecoration(
                                 labelText: 'نام کاربری',
                                 labelStyle: TextStyle(
@@ -101,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 20),
                             TextField(
-                              controller: _passwordController,
+                              controller: widget._passwordController,
                               decoration: InputDecoration(
                                 labelText: 'رمز عبور',
                                 labelStyle: TextStyle(
@@ -128,24 +145,147 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             SizedBox(height: 20),
 
-                            ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                textStyle: TextStyle(
-                                  fontFamily: 'sb',
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                ),
-                                backgroundColor: Mycolor.blue,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadiusGeometry.circular(
-                                    20,
-                                  ),
-                                ),
-                              ),
-                              onPressed: () {},
-                              child: Text('ورود به حساب کاربری'),
+                            //bloc
+                            BlocBuilder<AuthBloc, AuthState>(
+                              builder: (context, state) {
+                                Widget myContainer = Container();
+                                if (state is AuthInitState) {
+                                  myContainer = Container(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        textStyle: TextStyle(
+                                          fontFamily: 'sb',
+                                          fontSize: 20,
+                                          color: Colors.white,
+                                        ),
+                                        backgroundColor: Mycolor.blue,
+                                        foregroundColor: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(20),
+                                        ),
+                                      ),
+
+                                      onPressed: () {
+                                        BlocProvider.of<AuthBloc>(context).add(
+                                          AuthLoginRequestEvent(
+                                            username:
+                                                widget._usernameController.text,
+                                            password:
+                                                widget._passwordController.text,
+                                          ),
+                                        );
+                                      },
+                                      child: Text('ورود به حساب کاربری'),
+                                    ),
+                                  );
+                                  return myContainer;
+                                }
+                                if (state is AuthLodingState) {
+                                  return CircularProgressIndicator();
+                                }
+                                if (state is AuthResponseState) {
+                                  state.responce.fold(
+                                    (ifLeft) {
+                                      myContainer = Container(
+                                        child: Column(
+                                          children: [
+                                            ElevatedButton(
+                                              style: ElevatedButton.styleFrom(
+                                                textStyle: TextStyle(
+                                                  fontFamily: 'sb',
+                                                  fontSize: 20,
+                                                  color: Colors.white,
+                                                ),
+                                                backgroundColor: Mycolor.blue,
+                                                foregroundColor: Colors.white,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadiusGeometry.circular(
+                                                        20,
+                                                      ),
+                                                ),
+                                              ),
+
+                                              onPressed: () {
+                                                BlocProvider.of<AuthBloc>(
+                                                  context,
+                                                ).add(
+                                                  AuthLoginRequestEvent(
+                                                    username: widget
+                                                        ._usernameController
+                                                        .text,
+                                                    password: widget
+                                                        ._passwordController
+                                                        .text,
+                                                  ),
+                                                );
+                                              },
+                                              child: Text(
+                                                'ورود به حساب کاربری',
+                                              ),
+                                            ),
+                                            Text(ifLeft),
+                                          ],
+                                        ),
+                                      );
+                                      return myContainer;
+                                    },
+                                    (ifRight) {
+                                      myContainer = Container(
+                                        child: Column(
+                                          children: [
+                                            // ElevatedButton(
+                                            //   style: ElevatedButton.styleFrom(
+                                            //     textStyle: TextStyle(
+                                            //       fontFamily: 'sb',
+                                            //       fontSize: 20,
+                                            //       color: Colors.white,
+                                            //     ),
+                                            //     backgroundColor: Mycolor.blue,
+                                            //     foregroundColor: Colors.white,
+                                            //     shape: RoundedRectangleBorder(
+                                            //       borderRadius:
+                                            //           BorderRadiusGeometry.circular(
+                                            //             20,
+                                            //           ),
+                                            //     ),
+                                            //   ),
+
+                                            //   onPressed: () {
+                                            //     BlocProvider.of<AuthBloc>(
+                                            //       context,
+                                            //     ).add(
+                                            //       AuthLoginRequestEvent(
+                                            //         username: widget
+                                            //             ._usernameController
+                                            //             .text,
+                                            //         password: widget
+                                            //             ._passwordController
+                                            //             .text,
+                                            //       ),
+                                            //     );
+                                            //   },
+                                            //   child: Text(
+                                            //     'ورود به حساب کاربری',
+                                            //   ),
+                                            // ),
+                                            Text(ifRight),
+                                          ],
+                                        ),
+                                      );
+                                      return myContainer;
+                                    },
+                                  );
+                                } else {
+                                  myContainer = Container(
+                                    child: Text('خطای نا مشخص رخ داد'),
+                                  );
+                                }
+                                return myContainer;
+                              },
                             ),
+
                             SizedBox(height: 10),
 
                             Divider(),
@@ -154,9 +294,28 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Text('ثبت نام'),
-
-                                Text('فراموشی رمز عبور'),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'ثبت نام',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontFamily: 'sm',
+                                      color: Mycolor.blue,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'فراموشی رمز عبور',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontFamily: 'sm',
+                                      color: Mycolor.blue,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ],
