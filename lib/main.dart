@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:apple_store/constants/myColor.dart';
-import 'package:apple_store/di/di.dart';
+import 'package:apple_store/core/constants/myColor.dart';
+import 'package:apple_store/core/di/di.dart';
 import 'package:apple_store/screens/basket_screen.dart';
 import 'package:apple_store/screens/home_screen.dart';
 import 'package:apple_store/screens/login_screen.dart';

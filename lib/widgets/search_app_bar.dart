@@ -1,4 +1,4 @@
-import 'package:apple_store/constants/myColor.dart';
+import 'package:apple_store/core/constants/myColor.dart';
 import 'package:flutter/material.dart';
 
 class SerchAppBar extends StatelessWidget {

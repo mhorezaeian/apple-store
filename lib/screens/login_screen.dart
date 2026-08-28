@@ -1,7 +1,7 @@
-import 'package:apple_store/bloc/authentication/auth_bloc.dart';
-import 'package:apple_store/bloc/authentication/auth_event.dart';
-import 'package:apple_store/bloc/authentication/auth_state.dart';
-import 'package:apple_store/constants/myColor.dart';
+import 'package:apple_store/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:apple_store/features/auth/presentation/bloc/auth_event.dart';
+import 'package:apple_store/features/auth/presentation/bloc/auth_state.dart';
+import 'package:apple_store/core/constants/myColor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

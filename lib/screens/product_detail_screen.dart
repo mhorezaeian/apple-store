@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:apple_store/constants/myColor.dart';
+import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/widgets/product_app_bar.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
