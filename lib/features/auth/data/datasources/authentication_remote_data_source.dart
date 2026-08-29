@@ -1,6 +1,5 @@
-import 'package:apple_store/core/utils/api_exception.dart';
+import 'package:apple_store/core/error/exceptions.dart';
 import 'package:apple_store/features/auth/data/datasources/authentication_data_source.dart';
-import 'package:apple_store/core/di/di.dart';
 import 'package:dio/dio.dart';
 
 class AuthenticationRemoteDataSource implements AuthenticationDataSource {
@@ -26,7 +25,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       // print(response.data);
     } on DioException catch (e) {
       throw ApiException(
-        code: e.response?.statusCode ?? 0,
+        statusCode: e.response?.statusCode ?? 0,
         message: e.response?.data?.toString() ?? " API error",
         body: e.response?.data is Map
             ? Map<String, dynamic>.from(e.response!.data)
@@ -34,7 +33,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       );
     } catch (ex) {
       print('///////////////////error///////////');
-      throw ApiException(code: 123, message: ex.toString());
+      throw ApiException(statusCode: 123, message: ex.toString());
     }
   }
 
@@ -52,14 +51,14 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       }
     } on DioException catch (ex) {
       throw ApiException(
-        code: ex.response?.statusCode ?? 000,
+        statusCode: ex.response?.statusCode ?? 000,
         message: ex.response?.data?.toString() ?? " error",
         body: ex.response?.data is Map
             ? Map<String, dynamic>.from(ex.response!.data)
             : {},
       );
     } catch (ex) {
-      throw ApiException(code: 123, message: ex.toString());
+      throw ApiException(statusCode: 123, message: ex.toString());
     }
   }
 }

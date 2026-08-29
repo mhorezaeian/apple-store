@@ -1,6 +1,6 @@
-import 'package:apple_store/features/Product_category/data/repositories/product_category_reposirory.dart';
-import 'package:apple_store/features/Product_category/presentation/bloc/Product_category_state.dart';
-import 'package:apple_store/features/Product_category/presentation/bloc/product_category_event.dart';
+import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
+import 'package:apple_store/features/product_category/presentation/bloc/product_category_state.dart';
+import 'package:apple_store/features/product_category/presentation/bloc/product_category_event.dart';
 import 'package:bloc/bloc.dart';
 
 class ProductCategoryBloc

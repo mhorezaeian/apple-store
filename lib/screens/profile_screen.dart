@@ -13,7 +13,7 @@ class ProfileScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            TittleAppBar(title: 'حساب کاربری'),
+            SliverToBoxAdapter(child: TittleAppBar(title: 'حساب کاربری')),
             SliverToBoxAdapter(
               child: Column(
                 children: [

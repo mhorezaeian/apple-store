@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 
-abstract class AuthenticationRepository {
+abstract interface class AuthenticationRepository {
   Future<Either<String, String>> register(
     String username,
     String password,

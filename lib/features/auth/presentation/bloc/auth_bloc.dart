@@ -1,4 +1,4 @@
-import 'package:apple_store/features/auth/data/repositories/authentication_repository.dart';
+import 'package:apple_store/features/auth/domain/repositories/authentication_repository.dart';
 import 'package:apple_store/core/di/di.dart';
 import 'package:bloc/bloc.dart';
 import 'package:apple_store/features/auth/presentation/bloc/auth_event.dart';

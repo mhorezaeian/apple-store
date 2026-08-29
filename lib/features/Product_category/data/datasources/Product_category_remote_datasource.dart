@@ -1,8 +1,7 @@
 import 'package:apple_store/core/error/exceptions.dart';
-import 'package:apple_store/features/Product_category/data/datasources/Product_category_datasource.dart';
-import 'package:apple_store/features/Product_category/data/models/Product_category_model.dart';
+import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
+import 'package:apple_store/features/product_category/data/models/product_category_model.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/src/foundation/annotations.dart';
 
 class ProductCategoryRemoteDatasource implements ProductCategoryDatasource {
   final Dio _dio;
@@ -10,14 +9,17 @@ class ProductCategoryRemoteDatasource implements ProductCategoryDatasource {
   ProductCategoryRemoteDatasource(this._dio);
 
   @override
-  Future<List<ProductCategory>> getCategories() async {
+  Future<List<ProductCategoryModel>> getCategories() async {
     try {
       final responce = await _dio.get('collections/category/records');
-      return responce.data['items']
-          .map<ProductCategory>(
-            (jsonObject) => ProductCategory.fromJson(jsonObject),
+
+      final List<ProductCategoryModel> models = responce.data['items']
+          .map<ProductCategoryModel>(
+            (jsonObject) => ProductCategoryModel.fromMap(jsonObject),
           )
           .toList();
+
+      return models;
     } on DioException catch (ex) {
       switch (ex.type) {
         case DioExceptionType.connectionError:
@@ -37,18 +39,8 @@ class ProductCategoryRemoteDatasource implements ProductCategoryDatasource {
                 : {},
           );
       }
-    }
-    // } on DioException catch (ex) {
-    //   throw ApiException(
-    //     statusCode: ex.response?.statusCode ?? 000,
-    //     message: ex.response?.data.toString() ?? "Api arror",
-    //     body: ex.response?.data is Map
-    //         ? Map<String, dynamic>.from(ex.response!.data)
-    //         : {},
-    //   );
-    // }
-    catch (ex) {
-      throw UnKnownException(message: ex.toString());
+    } catch (ex) {
+      throw UnKnownException(message: '${ex.toString()} fuck');
     }
   }
 }

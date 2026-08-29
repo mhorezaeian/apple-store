@@ -1,5 +1,5 @@
+import 'package:apple_store/features/product_category/domain/entities/product_category.dart';
 import 'package:equatable/equatable.dart';
-import 'package:apple_store/features/Product_category/data/models/Product_category_model.dart';
 
 sealed class ProductCategoryState extends Equatable {
   const ProductCategoryState();

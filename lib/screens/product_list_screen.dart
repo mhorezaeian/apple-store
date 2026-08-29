@@ -13,7 +13,7 @@ class ProductListScreen extends StatelessWidget {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            TittleAppBar(title: 'لیست محصولات'),
+            SliverToBoxAdapter(child: TittleAppBar(title: 'لیست محصولات')),
             SliverPadding(
               padding: EdgeInsets.symmetric(horizontal: 44),
               sliver: SliverGrid(

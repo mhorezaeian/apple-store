@@ -1,14 +1,16 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-class ProductCategory {
+import 'package:apple_store/features/product_category/domain/entities/product_category.dart';
+
+class ProductCategoryModel {
   String? id;
   String? collectionId;
   String? color;
   String? icon;
   String? thumbnail;
   String? title;
-  ProductCategory({
+  ProductCategoryModel({
     required this.id,
     required this.collectionId,
     required this.color,
@@ -28,8 +30,8 @@ class ProductCategory {
     };
   }
 
-  factory ProductCategory.fromMap(Map<String, dynamic> map) {
-    return ProductCategory(
+  factory ProductCategoryModel.fromMap(Map<String, dynamic> map) {
+    return ProductCategoryModel(
       id: map['id'] as String,
       collectionId: map['collectionId'] as String,
       color: map['color'] as String,
@@ -42,6 +44,14 @@ class ProductCategory {
 
   String toJson() => json.encode(toMap());
 
-  factory ProductCategory.fromJson(String source) =>
-      ProductCategory.fromMap(json.decode(source) as Map<String, dynamic>);
+  factory ProductCategoryModel.fromJson(String source) =>
+      ProductCategoryModel.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  ProductCategory toEntity() {
+    return ProductCategory(
+      id: id ?? '',
+      name: title ?? '',
+      imageUrl: thumbnail ?? '',
+    );
+  }
 }

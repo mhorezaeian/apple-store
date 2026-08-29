@@ -1,6 +1,5 @@
 import 'package:apple_store/core/error/failures.dart';
-import 'package:apple_store/core/utils/api_exception.dart';
-import 'package:apple_store/features/Product_category/data/models/Product_category_model.dart';
+import 'package:apple_store/features/product_category/domain/entities/product_category.dart';
 import 'package:dartz/dartz.dart';
 
 abstract interface class ProductCategoryRepository {

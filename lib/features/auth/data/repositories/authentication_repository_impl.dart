@@ -1,8 +1,7 @@
-import 'package:apple_store/core/utils/api_exception.dart';
+import 'package:apple_store/core/error/exceptions.dart';
 import 'package:apple_store/core/utils/autth_manager.dart';
 import 'package:apple_store/features/auth/data/datasources/authentication_data_source.dart';
-import 'package:apple_store/features/auth/data/repositories/authentication_repository.dart';
-import 'package:apple_store/core/di/di.dart';
+import 'package:apple_store/features/auth/domain/repositories/authentication_repository.dart';
 
 import 'package:dartz/dartz.dart';
 

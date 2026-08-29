@@ -14,7 +14,7 @@ class BasketScreen extends StatelessWidget {
         children: [
           CustomScrollView(
             slivers: [
-              TittleAppBar(title: 'سبد خرید'),
+              SliverToBoxAdapter(child: TittleAppBar(title: 'سبد خرید')),
               SliverList(
                 delegate: SliverChildBuilderDelegate(childCount: 12, (
                   context,
