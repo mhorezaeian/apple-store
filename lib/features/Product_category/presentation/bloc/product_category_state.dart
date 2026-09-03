@@ -27,7 +27,7 @@ final class ProductCategoryLoadSuccess extends ProductCategoryState {
   List<Object> get props => [categories];
 }
 
-// class ProductCategorySuccess extends ProductCategoryState {
+// class ProductCategorySuccess extends ProductCategoryState {S
 //   Either<ApiException, List<ProductCategory>> responce;
 //   ProductCategorySuccess({required this.responce});
 // }

@@ -1,5 +1,5 @@
 import 'package:apple_store/core/constants/myColor.dart';
-import 'package:apple_store/widgets/category_item.dart';
+import 'package:apple_store/features/product_category/presentation/widgets/category_item.dart';
 import 'package:flutter/material.dart';
 
 class CategoryList extends StatelessWidget {

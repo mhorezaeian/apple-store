@@ -1,4 +1,8 @@
 //product_category
+import 'package:apple_store/features/home/data/datasources/banner_datasource.dart';
+import 'package:apple_store/features/home/data/datasources/banner_remote_dataSource.dart';
+import 'package:apple_store/features/home/data/repositories/banner_repository_impl.dart';
+import 'package:apple_store/features/home/domain/repositories/banner_repository.dart';
 import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
 import 'package:apple_store/features/product_category/presentation/bloc/product_category_bloc.dart';
 import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
@@ -16,6 +20,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 var locator = GetIt.instance;
 Future<void> getItInit() async {
+  await _registerCorecomponenets();
+  _registerAuthentication();
+  _registerProductCategory();
+  _registerHome();
+}
+
+Future<void> _registerCorecomponenets() async {
   //componenets
   locator.registerSingleton<Dio>(
     Dio(BaseOptions(baseUrl: 'https://startflutter.ir/api/')),
@@ -23,34 +34,48 @@ Future<void> getItInit() async {
   locator.registerSingleton<SharedPreferences>(
     await SharedPreferences.getInstance(),
   );
+}
 
-  //Product Category
-
+//
+void _registerAuthentication() {
   //datasources
   locator.registerLazySingleton<AuthenticationDataSource>(
     () => AuthenticationRemoteDataSource(locator.get<Dio>()),
   );
-  locator.registerFactory<ProductCategoryDatasource>(
-    () => ProductCategoryRemoteDatasource(locator.get<Dio>()),
-  );
-
   //repository
   locator.registerLazySingleton<AuthenticationRepository>(
     () => AuthenticationRepositoryImpl(locator.get<AuthenticationDataSource>()),
   );
+}
+
+//
+void _registerProductCategory() {
+  //datasources
+  locator.registerFactory<ProductCategoryDatasource>(
+    () => ProductCategoryRemoteDatasource(locator.get<Dio>()),
+  );
+  //repository
   locator.registerFactory<ProductCategoryRepository>(
     () =>
         ProductCategoryReposiroryImpl(locator.get<ProductCategoryDatasource>()),
   );
-
   //bloc
   locator.registerFactory<ProductCategoryBloc>(
     () => ProductCategoryBloc(locator.get<ProductCategoryRepository>()),
   );
+}
 
-  print('🔥 NEW DI FILE');
-  print(
-    'ProductCategoryBloc registered: '
-    '${locator.isRegistered<ProductCategoryBloc>()}',
+//
+void _registerHome() {
+  //datasources
+  locator.registerFactory<BannerDatasource>(
+    () => BannerRemoteDatasource(locator.get<Dio>()),
   );
+
+  //repository
+  locator.registerFactory<BannerRepository>(
+    () => BannerRepositoryImpl(locator.get<BannerDatasource>()),
+  );
+
+  //bloc
 }

@@ -1,25 +1,20 @@
 import 'package:apple_store/core/error/exceptions.dart';
-import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
-import 'package:apple_store/features/product_category/data/models/product_category_model.dart';
+import 'package:apple_store/features/home/data/datasources/banner_datasource.dart';
+import 'package:apple_store/features/home/data/models/banner_model.dart';
 import 'package:dio/dio.dart';
 
-class ProductCategoryRemoteDatasource implements ProductCategoryDatasource {
+class BannerRemoteDatasource implements BannerDatasource {
   final Dio _dio;
 
-  ProductCategoryRemoteDatasource(this._dio);
-
+  BannerRemoteDatasource(this._dio);
   @override
-  Future<List<ProductCategoryModel>> getCategories() async {
+  Future<List<BannerModel>> getBaners() async {
     try {
-      final responce = await _dio.get('collections/category/records');
-
-      final List<ProductCategoryModel> model = responce.data['items']
-          .map<ProductCategoryModel>(
-            (jsonObject) => ProductCategoryModel.fromMap(jsonObject),
-          )
+      final response = await _dio.get('collections/banner/records');
+      final List<BannerModel> banners = response.data['items']
+          .map<BannerModel>((map) => BannerModel.fromMap(map))
           .toList();
-
-      return model;
+      return banners;
     } on DioException catch (ex) {
       switch (ex.type) {
         case DioExceptionType.connectionError:
@@ -40,7 +35,9 @@ class ProductCategoryRemoteDatasource implements ProductCategoryDatasource {
           );
       }
     } catch (ex) {
-      throw UnKnownException(message: '${ex.toString()} fuck UnKnownException');
+      throw UnKnownException(
+        message: '${ex.toString()} fucking UnKnownException',
+      );
     }
   }
 }

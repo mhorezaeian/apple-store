@@ -5,8 +5,12 @@ abstract class AppException implements Exception {
   AppException({required this.message, this.statusCode, this.body});
 }
 
-class ApiException extends AppException {
-  ApiException({required super.message, required super.statusCode, super.body});
+class ServerException extends AppException {
+  ServerException({
+    required super.message,
+    required super.statusCode,
+    super.body,
+  });
 
   @override
   String toString() {

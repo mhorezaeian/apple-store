@@ -19,7 +19,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
     try {
       await _datasource.register(username, password, passwordConfirm);
       return right('register done');
-    } on ApiException catch (ex) {
+    } on ServerException catch (ex) {
       return left(ex.message ?? " خطا محتوای متنی ندارد");
     } catch (ex) {
       return left(ex.toString());
@@ -36,7 +36,7 @@ class AuthenticationRepositoryImpl implements AuthenticationRepository {
       } else {
         return left("خطاد");
       }
-    } on ApiException catch (e) {
+    } on ServerException catch (e) {
       return left(e.message ?? "خطا محتوای متنی ندارد");
     } catch (ex) {
       return left(ex.toString());

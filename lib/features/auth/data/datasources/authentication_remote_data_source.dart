@@ -24,7 +24,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       );
       // print(response.data);
     } on DioException catch (e) {
-      throw ApiException(
+      throw ServerException(
         statusCode: e.response?.statusCode ?? 0,
         message: e.response?.data?.toString() ?? " API error",
         body: e.response?.data is Map
@@ -33,7 +33,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
       );
     } catch (ex) {
       print('///////////////////error///////////');
-      throw ApiException(statusCode: 123, message: ex.toString());
+      throw ServerException(statusCode: 123, message: ex.toString());
     }
   }
 
@@ -50,7 +50,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
         return "error on login";
       }
     } on DioException catch (ex) {
-      throw ApiException(
+      throw ServerException(
         statusCode: ex.response?.statusCode ?? 000,
         message: ex.response?.data?.toString() ?? " error",
         body: ex.response?.data is Map
@@ -58,7 +58,7 @@ class AuthenticationRemoteDataSource implements AuthenticationDataSource {
             : {},
       );
     } catch (ex) {
-      throw ApiException(statusCode: 123, message: ex.toString());
+      throw ServerException(statusCode: 123, message: ex.toString());
     }
   }
 }
