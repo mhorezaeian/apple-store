@@ -3,6 +3,7 @@ import 'package:apple_store/features/home/data/datasources/banner_datasource.dar
 import 'package:apple_store/features/home/data/datasources/banner_remote_dataSource.dart';
 import 'package:apple_store/features/home/data/repositories/banner_repository_impl.dart';
 import 'package:apple_store/features/home/domain/repositories/banner_repository.dart';
+import 'package:apple_store/features/home/presentation/bloc/home_bloc.dart';
 import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
 import 'package:apple_store/features/product_category/presentation/bloc/product_category_bloc.dart';
 import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
@@ -26,6 +27,7 @@ Future<void> getItInit() async {
   _registerHome();
 }
 
+//Core
 Future<void> _registerCorecomponenets() async {
   //componenets
   locator.registerSingleton<Dio>(
@@ -36,7 +38,7 @@ Future<void> _registerCorecomponenets() async {
   );
 }
 
-//
+//Auth
 void _registerAuthentication() {
   //datasources
   locator.registerLazySingleton<AuthenticationDataSource>(
@@ -48,7 +50,7 @@ void _registerAuthentication() {
   );
 }
 
-//
+//ProductCategory
 void _registerProductCategory() {
   //datasources
   locator.registerFactory<ProductCategoryDatasource>(
@@ -65,7 +67,7 @@ void _registerProductCategory() {
   );
 }
 
-//
+//Home
 void _registerHome() {
   //datasources
   locator.registerFactory<BannerDatasource>(
@@ -78,4 +80,10 @@ void _registerHome() {
   );
 
   //bloc
+  locator.registerFactory<HomeBloc>(
+    () => HomeBloc(
+      locator.get<BannerRepository>(),
+      locator.get<ProductCategoryRepository>(),
+    ),
+  );
 }

@@ -23,11 +23,9 @@ class ProductCategoryReposiroryImpl implements ProductCategoryRepository {
 
       return right(categories);
     } on NetworkException catch (e) {
-      return left(
-        NetworkFailure(message: 'اتصال به اینترنت یا سرور برقرار نشد'),
-      );
+      return left(NetworkFailure());
     } on ServerException catch (e) {
-      return left(ServerFailure(message: 'خطای غیرمنتظره‌ای رخ داد'));
+      return left(ServerFailure());
     } on UnKnownException catch (e) {
       return left(UnknownFailure(message: e.toString()));
     } catch (e) {

@@ -1,7 +1,7 @@
 import 'package:apple_store/core/error/failures.dart';
-import 'package:apple_store/features/home/domain/entities/banner.dart';
+import 'package:apple_store/features/home/domain/entities/Home_banner.dart';
 import 'package:dartz/dartz.dart';
 
 abstract interface class BannerRepository {
-  Future<Either<Failure, List<Banner>>> getBanners();
+  Future<Either<Failure, List<HomeBanner>>> getBanners();
 }

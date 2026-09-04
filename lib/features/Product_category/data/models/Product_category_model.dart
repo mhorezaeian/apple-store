@@ -35,7 +35,8 @@ class ProductCategoryModel {
       id: map['id'] as String,
       collectionId: map['collectionId'] as String,
       color: map['color'] as String,
-      icon: map['icon'] as String,
+      icon:
+          'https://startflutter.ir/api/files/${map['collectionId'] as String}/${map['id'] as String}/${map['icon'] as String}',
       thumbnail:
           'https://startflutter.ir/api/files/${map['collectionId'] as String}/${map['id'] as String}/${map['thumbnail'] as String}',
       title: map['title'] as String,
@@ -52,6 +53,8 @@ class ProductCategoryModel {
       id: id ?? '',
       name: title ?? '',
       imageUrl: thumbnail ?? '',
+      color: color ?? '',
+      iconUrl: icon ?? '',
     );
   }
 }

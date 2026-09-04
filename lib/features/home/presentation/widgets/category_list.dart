@@ -1,9 +1,11 @@
 import 'package:apple_store/core/constants/myColor.dart';
-import 'package:apple_store/features/product_category/presentation/widgets/category_item.dart';
+import 'package:apple_store/features/home/presentation/widgets/category_item.dart';
+import 'package:apple_store/features/product_category/domain/entities/product_category.dart';
 import 'package:flutter/material.dart';
 
 class CategoryList extends StatelessWidget {
-  const CategoryList({super.key});
+  List<ProductCategory> categoryList;
+  CategoryList({super.key, required this.categoryList});
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +31,15 @@ class CategoryList extends StatelessWidget {
               child: SizedBox(
                 height: 90,
                 child: ListView.builder(
-                  itemCount: 10,
+                  itemCount: categoryList.length,
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: CategoryItem(),
+                    child: CategoryItem(
+                      name: categoryList[index].name,
+                      color: categoryList[index].color,
+                      iconUrl: categoryList[index].iconUrl,
+                    ),
                   ),
                 ),
               ),

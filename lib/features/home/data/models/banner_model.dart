@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:apple_store/features/home/domain/entities/banner.dart';
+import 'package:apple_store/features/home/domain/entities/Home_banner.dart';
 
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class BannerModel {
@@ -58,8 +58,8 @@ class BannerModel {
   @override
   int get hashCode => id.hashCode ^ collectionId.hashCode ^ thumbnail.hashCode;
 
-  Banner toEntity() {
-    return Banner(id: id ?? '', imageUrl: thumbnail ?? '');
+  HomeBanner toEntity() {
+    return HomeBanner(id: id ?? '', imageUrl: thumbnail ?? '');
   }
 }
 

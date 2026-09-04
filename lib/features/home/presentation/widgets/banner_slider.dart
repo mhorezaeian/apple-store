@@ -1,9 +1,13 @@
 import 'package:apple_store/core/constants/myColor.dart';
+import 'package:apple_store/core/widgets/cached_image.dart';
+import 'package:apple_store/features/home/domain/entities/Home_banner.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class BannerSlider extends StatelessWidget {
-  const BannerSlider({super.key});
+  final List<HomeBanner> banners;
+
+  const BannerSlider({super.key, required this.banners});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +23,7 @@ class BannerSlider extends StatelessWidget {
             height: 200,
             child: PageView.builder(
               controller: bannerController,
-              itemCount: 3,
+              itemCount: banners.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(
@@ -28,10 +32,14 @@ class BannerSlider extends StatelessWidget {
                     top: 8,
                   ),
                   child: Container(
-                    height: 200,
+                    // height: 200,
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: CachedImage(
+                      imageUrl: banners[index].imageUrl,
+                      fit: BoxFit.fill,
                     ),
                   ),
                 );

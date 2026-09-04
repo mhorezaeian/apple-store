@@ -18,7 +18,8 @@ final class HomeLoadFailure extends HomeState {
 }
 
 final class HomeLoadSuccess extends HomeState {
-  final List<Banner> banners;
+  final List<HomeBanner> banners;
+  final List<ProductCategory> categories;
 
-  HomeLoadSuccess({required this.banners});
+  HomeLoadSuccess({required this.banners, required this.categories});
 }
