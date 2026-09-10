@@ -4,6 +4,12 @@ import 'package:apple_store/features/home/data/datasources/banner_remote_dataSou
 import 'package:apple_store/features/home/data/repositories/banner_repository_impl.dart';
 import 'package:apple_store/features/home/domain/repositories/banner_repository.dart';
 import 'package:apple_store/features/home/presentation/bloc/home_bloc.dart';
+import 'package:apple_store/features/product/data/datasources/product_datasource.dart';
+import 'package:apple_store/features/product/data/datasources/product_remote_datasource.dart';
+
+import 'package:apple_store/features/product/data/repositories/product_repository_impl.dart';
+import 'package:apple_store/features/product/domain/repositories/product_repositiry.dart';
+import 'package:apple_store/features/product/presentation/bloc/product_bloc.dart';
 import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
 import 'package:apple_store/features/product_category/presentation/bloc/product_category_bloc.dart';
 import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
@@ -25,6 +31,7 @@ Future<void> getItInit() async {
   _registerAuthentication();
   _registerProductCategory();
   _registerHome();
+  _registerProduct();
 }
 
 //Core
@@ -84,6 +91,25 @@ void _registerHome() {
     () => HomeBloc(
       locator.get<BannerRepository>(),
       locator.get<ProductCategoryRepository>(),
+      locator.get<ProductRepositiry>(),
     ),
+  );
+}
+
+//Home
+void _registerProduct() {
+  //datasources
+  locator.registerFactory<ProductDatasource>(
+    () => ProductRemoteDatasource(locator.get<Dio>()),
+  );
+
+  //repository
+  locator.registerFactory<ProductRepositiry>(
+    () => ProductRepositoryImpl(locator.get<ProductDatasource>()),
+  );
+
+  //bloc
+  locator.registerFactory<ProductBloc>(
+    () => ProductBloc(locator.get<ProductRepositiry>()),
   );
 }

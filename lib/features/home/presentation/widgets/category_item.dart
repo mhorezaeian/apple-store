@@ -14,7 +14,6 @@ class CategoryItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(iconUrl);
     return Column(
       children: [
         InkWell(

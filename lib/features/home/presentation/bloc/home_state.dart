@@ -9,7 +9,7 @@ abstract class HomeState extends Equatable {
 
 final class HomeInitial extends HomeState {}
 
-final class HomeInLoadInProgress extends HomeState {}
+final class HomeLoadInProgress extends HomeState {}
 
 final class HomeLoadFailure extends HomeState {
   final String message;
@@ -20,6 +20,11 @@ final class HomeLoadFailure extends HomeState {
 final class HomeLoadSuccess extends HomeState {
   final List<HomeBanner> banners;
   final List<ProductCategory> categories;
+  final List<Product> products;
 
-  HomeLoadSuccess({required this.banners, required this.categories});
+  HomeLoadSuccess({
+    required this.banners,
+    required this.categories,
+    required this.products,
+  });
 }

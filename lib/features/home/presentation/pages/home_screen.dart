@@ -3,7 +3,7 @@ import 'package:apple_store/core/di/di.dart';
 import 'package:apple_store/features/home/presentation/bloc/home_bloc.dart';
 import 'package:apple_store/features/home/presentation/widgets/banner_slider.dart';
 import 'package:apple_store/features/home/presentation/widgets/category_list.dart';
-import 'package:apple_store/widgets/item_horizental_list.dart';
+import 'package:apple_store/features/home/presentation/widgets/product_horizental_list.dart';
 import 'package:apple_store/features/home/presentation/widgets/search_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -30,7 +30,7 @@ class HomeView extends StatelessWidget {
         child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
             var homeWidget = Container();
-            if (state is HomeInLoadInProgress) {
+            if (state is HomeLoadInProgress) {
               homeWidget = Container(child: CircularProgressIndicator());
             }
             if (state is HomeLoadFailure) {
@@ -106,8 +106,14 @@ class HomeView extends StatelessWidget {
                     SerchAppBar(),
                     BannerSlider(banners: state.banners),
                     CategoryList(categoryList: state.categories),
-                    ItemHorizentalList(),
-                    ItemHorizentalList(),
+                    ProductHorizentalList(
+                      title: 'پرفروشترین',
+                      productList: state.products,
+                    ),
+                    ProductHorizentalList(
+                      title: 'جدید ترین',
+                      productList: state.products,
+                    ),
                   ],
                 ),
               );

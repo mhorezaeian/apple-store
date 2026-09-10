@@ -19,7 +19,6 @@ class ProductCategoryReposiroryImpl implements ProductCategoryRepository {
       final categories = categoriyModel
           .map((model) => model.toEntity())
           .toList();
-      print(categories);
 
       return right(categories);
     } on NetworkException catch (e) {

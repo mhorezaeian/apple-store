@@ -17,8 +17,6 @@ class ProductCategoryBloc
     });
   }
   Future<void> _getCategories(Emitter<ProductCategoryState> emit) async {
-    emit(ProductCategoryLoadInProgress());
-
     final result = await _repository.getCategoies();
 
     result.fold(

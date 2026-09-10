@@ -1,5 +1,5 @@
 import 'package:apple_store/core/constants/myColor.dart';
-import 'package:apple_store/widgets/product_card.dart';
+import 'package:apple_store/features/product/presentation/widgets/product_card.dart';
 import 'package:apple_store/widgets/tittle_app_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,8 @@ class ProductListScreen extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 44),
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate((context, index) {
-                  return ProductCard();
+                  // return ProductCard();
+                  return Container();
                 }),
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   childAspectRatio: 2 / 2.8,

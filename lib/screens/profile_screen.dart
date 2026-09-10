@@ -1,5 +1,4 @@
 import 'package:apple_store/core/constants/myColor.dart';
-import 'package:apple_store/features/home/presentation/widgets/category_item.dart';
 import 'package:apple_store/widgets/tittle_app_bar.dart';
 import 'package:flutter/material.dart';
 
