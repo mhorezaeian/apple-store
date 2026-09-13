@@ -36,6 +36,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     final categoryResult = await _productCategoryRepository.getCategoies();
 
     final prodoctResult = await _productRepository.getProducts();
+    final hotestProdoctResult = await _productRepository.getHotestProducts();
+    final bestSellersProdoctResult = await _productRepository
+        .getBestSellerProducts();
 
     Failure? failure;
 
@@ -44,6 +47,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     categoryResult.fold((f) => failure ??= f, (_) {});
 
     prodoctResult.fold((f) => failure ??= f, (_) {});
+    hotestProdoctResult.fold((f) => failure ??= f, (_) {});
+    bestSellersProdoctResult.fold((f) => failure ??= f, (_) {});
 
     if (failure != null) {
       emit(HomeLoadFailure(message: failure!.message));
@@ -54,7 +59,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeLoadSuccess(
         banners: bannerResult.getOrElse(() => []),
         categories: categoryResult.getOrElse(() => []),
-        products: prodoctResult.getOrElse(() => []),
+        hotestproducts: hotestProdoctResult.getOrElse(() => []),
+        bsetSellerProducts: bestSellersProdoctResult.getOrElse(() => []),
       ),
     );
   }

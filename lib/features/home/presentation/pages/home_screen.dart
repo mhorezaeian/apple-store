@@ -108,11 +108,11 @@ class HomeView extends StatelessWidget {
                     CategoryList(categoryList: state.categories),
                     ProductHorizentalList(
                       title: 'پرفروشترین',
-                      productList: state.products,
+                      productList: state.bsetSellerProducts,
                     ),
                     ProductHorizentalList(
                       title: 'جدید ترین',
-                      productList: state.products,
+                      productList: state.hotestproducts,
                     ),
                   ],
                 ),

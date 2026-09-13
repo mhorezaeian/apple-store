@@ -27,4 +27,46 @@ class ProductRepositoryImpl implements ProductRepositiry {
       return left(UnknownFailure(message: ' ${e.toString()}fucking products'));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Product>>> getBestSellerProducts() async {
+    try {
+      final productModels = await _datasource.getBestSellerProducts();
+
+      final products = productModels.map((model) => model.toEntity()).toList();
+      return right(products);
+    } on NetworkException catch (e) {
+      return left(NetworkFailure());
+    } on ServerException catch (e) {
+      print('on best seller product');
+
+      print(e.toString());
+
+      return left(ServerFailure());
+    } on UnKnownException catch (e) {
+      return left(UnknownFailure(message: e.message.toString()));
+    } catch (e) {
+      return left(UnknownFailure(message: ' ${e.toString()}fucking products'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Product>>> getHotestProducts() async {
+    try {
+      final productModels = await _datasource.getHotestProducts();
+
+      final products = productModels.map((model) => model.toEntity()).toList();
+      return right(products);
+    } on NetworkException catch (e) {
+      return left(NetworkFailure());
+    } on ServerException catch (e) {
+      print('on hotest product');
+      print(e.toString());
+      return left(ServerFailure());
+    } on UnKnownException catch (e) {
+      return left(UnknownFailure(message: e.message.toString()));
+    } catch (e) {
+      return left(UnknownFailure(message: ' ${e.toString()}fucking products'));
+    }
+  }
 }

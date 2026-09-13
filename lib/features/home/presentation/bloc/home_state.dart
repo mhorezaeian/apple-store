@@ -20,11 +20,13 @@ final class HomeLoadFailure extends HomeState {
 final class HomeLoadSuccess extends HomeState {
   final List<HomeBanner> banners;
   final List<ProductCategory> categories;
-  final List<Product> products;
+  final List<Product> hotestproducts;
+  final List<Product> bsetSellerProducts;
 
   HomeLoadSuccess({
     required this.banners,
     required this.categories,
-    required this.products,
+    required this.hotestproducts,
+    required this.bsetSellerProducts
   });
 }

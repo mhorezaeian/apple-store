@@ -4,4 +4,6 @@ import 'package:dartz/dartz.dart';
 
 abstract interface class ProductRepositiry {
   Future<Either<Failure, List<Product>>> getProducts();
+  Future<Either<Failure, List<Product>>> getHotestProducts();
+  Future<Either<Failure, List<Product>>> getBestSellerProducts();
 }
