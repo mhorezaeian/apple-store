@@ -24,6 +24,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       await _getHomeData(emit);
     });
     on<HomeRefreshed>((event, emit) async {
+      print('bloc refresh');
       await _getHomeData(emit);
     });
   }
@@ -35,7 +36,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     final categoryResult = await _productCategoryRepository.getCategoies();
 
-    final prodoctResult = await _productRepository.getProducts();
+    final prodoctResult = await _productRepository.getAllProducts();
     final hotestProdoctResult = await _productRepository.getHotestProducts();
     final bestSellersProdoctResult = await _productRepository
         .getBestSellerProducts();

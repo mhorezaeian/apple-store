@@ -70,7 +70,7 @@ class ProductCategoryView extends StatelessWidget {
                             childCount: state.categories.length,
                             (context, index) {
                               final category = state.categories[index];
-                              return CachedImage(imageUrl: category.imageUrl);
+                              return CachedImage(imageUrl: category.imageUrl!);
                               // return Text('${category.imageUrl}');
                             },
                           ),

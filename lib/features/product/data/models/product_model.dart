@@ -2,22 +2,31 @@
 import 'dart:convert';
 
 import 'package:apple_store/features/product/domain/entities/product.dart';
+import 'package:apple_store/features/product/domain/entities/product_detail.dart';
 
 // {
-//     "category": "0fml1qqa0q17pk2",
-//     "collectionId": "6s4mxhn1b9v0u2g",
-//     "collectionName": "products",
-//     "created": "2023-12-29 13:23:51.531Z",
-//     "description": "asd fasdf asdf asd fad fads fasd fasdfadadsfadfasdfadsfafadsfasdf adsf",
-//     "discount_price": 2000000,
-//     "id": "p4ah0vfcb3joeju",
-//     "name": "Apple Watch Series8",
-//     "popularity": "Hotest",
-//     "price": 38000000,
-//     "quantity": 1,
-//     "thumbnail": "applewatch8_6pcWJmYR22.jpg",
-//     "updated": "2024-09-05 09:17:57.474Z"
-// },
+//     "page": 1,
+//     "perPage": 30,
+//     "totalItems": 1,
+//     "totalPages": 1,
+//     "items": [
+//         {
+//             "category": "0fml1qqa0q17pk2",
+//             "collectionId": "6s4mxhn1b9v0u2g",
+//             "collectionName": "products",
+//             "created": "2024-01-24 18:04:27.857Z",
+//             "description": "ساعت‌های هوشمند اپل از سری لوازم جانبی جذاب و پرکاربردی هستند که همواره طرفداران اپل برای رونمایی از آن‌ در کنار سایر دستگاه‌های اپل انتظار می‌کشند. اپل سری 7 ساعت‌های هوشمند خود را در دو سایز 41 میلی‌متر و 45 میلی‌متر به بازار روانه می‌کند. این ساعت هوشمند نسبت به ساعت‌های هوشمند سری قبل اپل با صفحه‌نمایش خمیده ارائه شده‌است. همچنین حاشیه‌ها نسبت به سری قبل کمتر خواهد بود. اپل ساعت هوشمند سری 7 خود را در رنگ‌های سبز، آبی، قرمز، مشکی و استارلایت (starlight) ارائه کرده‌است. جنس بدنه کماکان آلومینیوم است. در این ساعت ویژگی‌های منحصربه‌فردی همچون سنسور اندازه‌گیری اکسیژن خون و برنامه سلامت ECG وجود دارد. اپل واج سری 7 صفحه نمایش لمسی خازنی دارد. صفحه نمایش این ساعت هوشمند OLED بوده و در برابر ترک خوردگی و گرد و غبار مقاوم است. عملکرد باتری این ساعت هوشمند 18 ساعت خواهد بود. این باتری نسبت به نسل قبل ساعت هوشمند در حدود 33 درصد بهبود پیدا کرده است و تنها 45 دقیقه تا شارژ 80 درصد ساعت هوشمندتان فاصله زمانی وجود دارد. نور صفحه نمایش در سری جدید اپل‌واچ در حدود 70 درصد بهبود پیدا کرده‌است.\r\n",
+//             "discount_price": 1500000,
+//             "id": "f3boue5hvtbv6ud",
+//             "name": "اپل واچ سری ۷ ",
+//             "popularity": "Best Seller",
+//             "price": 11480000,
+//             "quantity": 12,
+//             "thumbnail": "apple_watch_se_gold_aluminum_case_with_sport_band_1_572x572_1_SqCu135sJC.png",
+//             "updated": "2024-03-02 04:31:16.379Z"
+//         }
+//     ]
+// }
 
 class ProductModel {
   String? id;
@@ -29,6 +38,7 @@ class ProductModel {
   String? popularity;
   int? quantity;
   String? thumbnail;
+  String? category;
   ProductModel({
     this.id,
     this.name,
@@ -39,10 +49,23 @@ class ProductModel {
     this.popularity,
     this.quantity,
     this.thumbnail,
+    this.category,
   });
 
-  Product toEntity() {
+  Product toProductEntity() {
     return Product(
+      id: id,
+      name: name,
+      price: price,
+      discount_price: discount_price,
+      popularity: popularity,
+      imsgeUrl: thumbnail,
+      category: category,
+    );
+  }
+
+  ProductDetail toProductDetailEntity() {
+    return ProductDetail(
       id: id,
       name: name,
       description: description,
@@ -51,6 +74,7 @@ class ProductModel {
       popularity: popularity,
       quantity: quantity,
       imsgeUrl: thumbnail,
+      category: category,
     );
   }
 
@@ -64,6 +88,7 @@ class ProductModel {
     String? popularity,
     int? quantity,
     String? thumbnail,
+    String? category,
   }) {
     return ProductModel(
       id: id ?? this.id,
@@ -75,6 +100,7 @@ class ProductModel {
       popularity: popularity ?? this.popularity,
       quantity: quantity ?? this.quantity,
       thumbnail: thumbnail ?? this.thumbnail,
+      category: category ?? this.category,
     );
   }
 
@@ -89,6 +115,7 @@ class ProductModel {
       'popularity': popularity,
       'quantity': quantity,
       'thumbnail': thumbnail,
+      'category': category,
     };
   }
 
@@ -99,7 +126,6 @@ class ProductModel {
       collectionId: map['collectionId'] != null
           ? map['collectionId'] as String
           : null,
-
       description: map['description'] != null
           ? map['description'] as String
           : null,
@@ -113,6 +139,7 @@ class ProductModel {
       quantity: map['quantity'] != null ? map['quantity'] as int : null,
       thumbnail:
           'https://startflutter.ir/api/files/${map['collectionId'] as String}/${map['id'] as String}/${map['thumbnail'] as String}',
+      category: map['category'] != null ? map['category'] as String : null,
     );
   }
 
@@ -123,6 +150,36 @@ class ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(id: $id, name: $name, collectionId: $collectionId, description: $description, price: $price, discount_price: $discount_price, popularity: $popularity, quantity: $quantity, thumbnail: $thumbnail)';
+    return 'ProductModel(id: $id, name: $name, collectionId: $collectionId, description: $description, price: $price, discount_price: $discount_price, popularity: $popularity, quantity: $quantity, thumbnail: $thumbnail, category: $category)';
+  }
+
+  @override
+  bool operator ==(covariant ProductModel other) {
+    if (identical(this, other)) return true;
+
+    return other.id == id &&
+        other.name == name &&
+        other.collectionId == collectionId &&
+        other.description == description &&
+        other.price == price &&
+        other.discount_price == discount_price &&
+        other.popularity == popularity &&
+        other.quantity == quantity &&
+        other.thumbnail == thumbnail &&
+        other.category == category;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        name.hashCode ^
+        collectionId.hashCode ^
+        description.hashCode ^
+        price.hashCode ^
+        discount_price.hashCode ^
+        popularity.hashCode ^
+        quantity.hashCode ^
+        thumbnail.hashCode ^
+        category.hashCode;
   }
 }

@@ -18,7 +18,15 @@ final class ProductLoadFailure extends ProductState {
 }
 
 final class ProductLoadSuccess extends ProductState {
-  final List<Product> products;
+  final ProductDetail product;
+  final List<ProductImage> productGallery;
+  final List<ProductVariant> productVariants;
+  final ProductCategory productCategory;
 
-  ProductLoadSuccess({required this.products});
+  ProductLoadSuccess({
+    required this.product,
+    required this.productGallery,
+    required this.productVariants,
+    required this.productCategory,
+  });
 }

@@ -36,9 +36,9 @@ class CategoryList extends StatelessWidget {
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: CategoryItem(
-                      name: categoryList[index].name,
-                      color: categoryList[index].color,
-                      iconUrl: categoryList[index].iconUrl,
+                      name: categoryList[index].name!,
+                      color: categoryList[index].color!,
+                      iconUrl: categoryList[index].iconUrl!,
                     ),
                   ),
                 ),

@@ -19,7 +19,12 @@ class ProductCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => ProductDetailScreen()),
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(
+                productId: product.id!,
+                categryId: product.category!,
+              ),
+            ),
           );
         },
         child: Container(

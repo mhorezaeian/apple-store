@@ -5,9 +5,13 @@ import 'package:apple_store/features/home/data/repositories/banner_repository_im
 import 'package:apple_store/features/home/domain/repositories/banner_repository.dart';
 import 'package:apple_store/features/home/presentation/bloc/home_bloc.dart';
 import 'package:apple_store/features/product/data/datasources/product_datasource.dart';
+import 'package:apple_store/features/product/data/datasources/product_gallery_datasource.dart';
+import 'package:apple_store/features/product/data/datasources/product_gallery_remote_datasource.dart';
 import 'package:apple_store/features/product/data/datasources/product_remote_datasource.dart';
+import 'package:apple_store/features/product/data/repositories/product_gallery_repository_impl.dart';
 
 import 'package:apple_store/features/product/data/repositories/product_repository_impl.dart';
+import 'package:apple_store/features/product/domain/repositories/product_gallery_repository.dart';
 import 'package:apple_store/features/product/domain/repositories/product_repositiry.dart';
 import 'package:apple_store/features/product/presentation/bloc/product_bloc.dart';
 import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
@@ -102,14 +106,33 @@ void _registerProduct() {
   locator.registerFactory<ProductDatasource>(
     () => ProductRemoteDatasource(locator.get<Dio>()),
   );
+  //
+  locator.registerFactory<ProductGalleryDatasource>(
+    () => ProductGalleryRemoteDatasource(locator.get<Dio>()),
+  );
+  //poduct comments
+  // locator.registerFactory<ProductDatasource>(
+  //   () => ProductRemoteDatasource(locator.get<Dio>()),
+  // );
 
   //repository
   locator.registerFactory<ProductRepositiry>(
     () => ProductRepositoryImpl(locator.get<ProductDatasource>()),
   );
+  locator.registerFactory<ProductGalleryRepository>(
+    () => ProductGalleryRepositoryImpl(locator.get<ProductGalleryDatasource>()),
+  );
+
+  //poduct comments
+  // locator.registerFactory<ProductRepositiry>(
+  //   () => ProductRepositoryImpl(locator.get<ProductDatasource>()),
+  // );
 
   //bloc
   locator.registerFactory<ProductBloc>(
-    () => ProductBloc(locator.get<ProductRepositiry>()),
+    () => ProductBloc(
+      locator.get<ProductRepositiry>(),
+      locator.get<ProductGalleryRepository>(),
+    ),
   );
 }

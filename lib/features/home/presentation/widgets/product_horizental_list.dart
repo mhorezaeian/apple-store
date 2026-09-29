@@ -54,6 +54,7 @@ class ProductHorizentalList extends StatelessWidget {
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: productList?.length,
+                  reverse: true,
 
                   itemBuilder: ((context, index) {
                     return Padding(

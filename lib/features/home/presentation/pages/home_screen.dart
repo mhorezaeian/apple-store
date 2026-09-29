@@ -1,5 +1,6 @@
 import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/di/di.dart';
+import 'package:apple_store/core/widgets/falilure_state_widget.dart';
 import 'package:apple_store/features/home/presentation/bloc/home_bloc.dart';
 import 'package:apple_store/features/home/presentation/widgets/banner_slider.dart';
 import 'package:apple_store/features/home/presentation/widgets/category_list.dart';
@@ -29,97 +30,38 @@ class HomeView extends StatelessWidget {
       child: Center(
         child: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
-            var homeWidget = Container();
             if (state is HomeLoadInProgress) {
-              homeWidget = Container(child: CircularProgressIndicator());
+              return CircularProgressIndicator();
             }
             if (state is HomeLoadFailure) {
-              homeWidget = Container(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(44.0),
-                    child: Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            state.message,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontFamily: 'sm', fontSize: 13),
-                          ),
-                          SizedBox(height: 15),
-                          InkWell(
-                            borderRadius: BorderRadius.circular(20),
-                            splashColor: Mycolor.blueIndicator,
-
-                            onTap: () {
-                              context.read<HomeBloc>().add(HomeRefreshed());
-                            },
-                            child: Container(
-                              // width: 56,
-                              // height: 56,
-                              decoration: ShapeDecoration(
-                                shape: ContinuousRectangleBorder(
-                                  borderRadius: BorderRadiusGeometry.circular(
-                                    20,
-                                  ),
-                                ),
-                                shadows: [
-                                  BoxShadow(
-                                    color: Mycolor.blue,
-                                    blurRadius: 30,
-                                    spreadRadius: -6,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                                color: Mycolor.blue,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0,
-                                  horizontal: 16,
-                                ),
-                                child: Text(
-                                  'تلاش مجدد',
-                                  style: TextStyle(
-                                    fontFamily: 'sb',
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              print("home lode faill");
+              return FailureStateWidget(
+                message: state.message,
+                onRetry: () {
+                  print('Home Refresh');
+                  context.read<HomeBloc>().add(HomeRefreshed());
+                },
               );
             }
             if (state is HomeLoadSuccess) {
-              homeWidget = Container(
-                child: CustomScrollView(
-                  slivers: [
-                    SerchAppBar(),
-                    BannerSlider(banners: state.banners),
-                    CategoryList(categoryList: state.categories),
-                    ProductHorizentalList(
-                      title: 'پرفروشترین',
-                      productList: state.bsetSellerProducts,
-                    ),
-                    ProductHorizentalList(
-                      title: 'جدید ترین',
-                      productList: state.hotestproducts,
-                    ),
-                  ],
-                ),
+              return CustomScrollView(
+                slivers: [
+                  SerchAppBar(),
+                  BannerSlider(banners: state.banners),
+                  CategoryList(categoryList: state.categories),
+                  ProductHorizentalList(
+                    title: 'پرفروشترین',
+                    productList: state.bsetSellerProducts,
+                  ),
+                  ProductHorizentalList(
+                    title: 'جدید ترین',
+                    productList: state.hotestproducts,
+                  ),
+                ],
               );
             }
 
-            return homeWidget;
+            return const SizedBox.shrink();
           },
         ),
       ),

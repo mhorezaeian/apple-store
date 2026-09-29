@@ -7,6 +7,16 @@ abstract class ProductEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class ProductStarted extends ProductEvent {}
+final class ProductStarted extends ProductEvent {
+  final String productId;
+  final String categryId;
 
-final class ProductRefreshed extends ProductEvent {}
+  ProductStarted({required this.productId, required this.categryId});
+}
+
+final class ProductRefreshed extends ProductEvent {
+  final String productId;
+  final String categryId;
+
+  ProductRefreshed({required this.productId, required this.categryId});
+}

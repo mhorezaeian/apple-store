@@ -2,21 +2,19 @@
 class Product {
   String? id;
   String? name;
-  String? description;
   int? price;
   int? discount_price;
   int? real_price;
   String? popularity;
-  int? quantity;
   String? imsgeUrl;
+  String? category;
   Product({
     required this.id,
     required this.name,
-    required this.description,
     required this.price,
     required this.discount_price,
     required this.popularity,
-    required this.quantity,
     required this.imsgeUrl,
+    required this.category,
   }) : real_price = (price ?? 0) - (discount_price ?? 0);
 }
