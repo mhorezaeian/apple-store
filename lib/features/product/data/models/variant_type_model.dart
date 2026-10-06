@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:apple_store/features/product/domain/entities/variant_type.dart';
+
 //
 // {
 //     "collectionId": "mk6un6za8uwi5g2",
@@ -19,6 +21,10 @@ class VariantTypeModel {
   String? title;
   String? type;
   VariantTypeModel({this.id, this.name, this.title, this.type});
+
+  VariantType toEntity() {
+    return VariantType(id: id, name: name, title: title, type: type);
+  }
 
   VariantTypeModel copyWith({
     String? id,

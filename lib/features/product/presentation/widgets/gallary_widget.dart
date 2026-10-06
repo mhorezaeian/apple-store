@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:apple_store/core/constants/myColor.dart' show Mycolor;
 import 'package:apple_store/core/widgets/cached_image.dart';
 import 'package:apple_store/features/product/domain/entities/product_image.dart';
-import 'package:apple_store/features/product/presentation/bloc/product_bloc.dart';
+import 'package:apple_store/features/product/presentation/bloc/productDetail/product_bloc.dart';
 
 class GallaryWidget extends StatefulWidget {
   List<ProductImage> gallary;

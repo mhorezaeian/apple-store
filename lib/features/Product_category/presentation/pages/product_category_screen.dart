@@ -1,6 +1,7 @@
 import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/di/di.dart';
 import 'package:apple_store/core/widgets/cached_image.dart';
+import 'package:apple_store/features/product/presentation/pages/product_list_screen.dart';
 import 'package:apple_store/widgets/tittle_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +71,23 @@ class ProductCategoryView extends StatelessWidget {
                             childCount: state.categories.length,
                             (context, index) {
                               final category = state.categories[index];
-                              return CachedImage(imageUrl: category.imageUrl!);
+                              return InkWell(
+                                onTap: () {
+                                  print(category.id);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProductListScreen(
+                                        productCategory: category,
+                                      ),
+                                    ),
+                                  );
+                                },
+
+                                child: CachedImage(
+                                  imageUrl: category.imageUrl!,
+                                ),
+                              );
                               // return Text('${category.imageUrl}');
                             },
                           ),

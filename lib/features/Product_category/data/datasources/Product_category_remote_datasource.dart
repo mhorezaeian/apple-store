@@ -1,4 +1,5 @@
 import 'package:apple_store/core/error/exceptions.dart';
+import 'package:apple_store/features/product/data/models/product_model.dart';
 import 'package:apple_store/features/product_category/data/datasources/product_category_datasource.dart';
 import 'package:apple_store/features/product_category/data/models/product_category_model.dart';
 import 'package:dio/dio.dart';

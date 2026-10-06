@@ -22,11 +22,13 @@ final class ProductLoadSuccess extends ProductState {
   final List<ProductImage> productGallery;
   final List<ProductVariant> productVariants;
   final ProductCategory productCategory;
+  final List<ProductProperty> productProprtiers;
 
   ProductLoadSuccess({
     required this.product,
     required this.productGallery,
     required this.productVariants,
     required this.productCategory,
+    required this.productProprtiers,
   });
 }

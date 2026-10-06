@@ -1,9 +1,9 @@
-import 'package:apple_store/features/product/data/models/variant_model.dart';
-import 'package:apple_store/features/product/data/models/variant_type_model.dart';
+import 'package:apple_store/features/product/domain/entities/variant.dart';
+import 'package:apple_store/features/product/domain/entities/variant_type.dart';
 
 class ProductVariant {
-  final VariantTypeModel? variantType;
-  final List<VariantModel> variants;
+  final VariantType? variantType;
+  final List<Variant> variants;
 
   ProductVariant({required this.variantType, required this.variants});
 }

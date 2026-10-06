@@ -1,16 +1,18 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
-import 'package:apple_store/features/product/domain/entities/Product_variant.dart';
+import 'package:apple_store/features/product/domain/entities/product_property.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/di/di.dart';
+import 'package:apple_store/core/utils/price_formatter.dart';
 import 'package:apple_store/core/widgets/cached_image.dart';
 import 'package:apple_store/core/widgets/falilure_state_widget.dart';
-import 'package:apple_store/features/product/presentation/bloc/product_bloc.dart';
+import 'package:apple_store/features/product/domain/entities/Product_variant.dart';
+import 'package:apple_store/features/product/presentation/bloc/productDetail/product_bloc.dart';
 import 'package:apple_store/features/product/presentation/widgets/gallary_widget.dart';
 import 'package:apple_store/widgets/product_app_bar.dart';
 
@@ -62,7 +64,7 @@ class ShowProductDetailScreen extends StatelessWidget {
             if (state is ProductLoadFailure) {
               return Column(
                 children: [
-                  ProductAppBar(title: 'محصولر'),
+                  ProductAppBar(title: 'محصول'),
 
                   Expanded(
                     child: FailureStateWidget(
@@ -127,99 +129,13 @@ class ShowProductDetailScreen extends StatelessWidget {
                           ),
 
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 44.0,
-                              vertical: 10,
-                            ),
-                            child: Container(
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  width: 1,
-                                  color: Mycolor.gery,
-                                ),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/icon_left_categroy.png',
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'مشاهده',
-                                      style: TextStyle(
-                                        fontFamily: 'sb',
-                                        fontSize: 12,
-                                        color: Mycolor.blue,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      ':مشخصات فنی',
-                                      style: TextStyle(
-                                        fontFamily: 'sm',
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          child: _showProductProperties(
+                            productProperties: state.productProprtiers,
                           ),
                         ),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 44.0,
-                              vertical: 10,
-                            ),
-                            child: Container(
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  width: 1,
-                                  color: Mycolor.gery,
-                                ),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/icon_left_categroy.png',
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'مشاهده',
-                                      style: TextStyle(
-                                        fontFamily: 'sb',
-                                        fontSize: 12,
-                                        color: Mycolor.blue,
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Text(
-                                      ':توضیحات محصول',
-                                      style: TextStyle(
-                                        fontFamily: 'sm',
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          child: _showProductDetail(
+                            productDetail: state.product.description,
                           ),
                         ),
                         SliverToBoxAdapter(
@@ -361,7 +277,14 @@ class ShowProductDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [priceButtom(), addToBasketButtom()],
+                      children: [
+                        priceButtom(
+                          price: state.product.price,
+                          real_price: state.product.real_price,
+                          discount_price: state.product.discount_price,
+                        ),
+                        addToBasketButtom(),
+                      ],
                     ),
                   ),
                 ],
@@ -375,6 +298,226 @@ class ShowProductDetailScreen extends StatelessWidget {
   }
 }
 
+class _showProductDetail extends StatefulWidget {
+  String? productDetail;
+  _showProductDetail({super.key, required this.productDetail});
+
+  @override
+  State<_showProductDetail> createState() => _showProductDetailState();
+}
+
+class _showProductDetailState extends State<_showProductDetail> {
+  bool _isVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 44.0, vertical: 5),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isVisible = !_isVisible;
+              });
+            },
+            child: Container(
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1, color: Mycolor.gery),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  children: [
+                    Image.asset('assets/images/icon_left_categroy.png'),
+                    SizedBox(width: 5),
+                    Text(
+                      'مشاهده',
+                      style: TextStyle(
+                        fontFamily: 'sb',
+                        fontSize: 12,
+                        color: Mycolor.blue,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      ':توضیحات محصول',
+                      style: TextStyle(fontFamily: 'sm', fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible: _isVisible,
+            child: Container(
+              // height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1, color: Mycolor.gery),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10.0,
+                  vertical: 12,
+                ),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Text(
+                    widget.productDetail ?? '',
+                    style: TextStyle(
+                      fontFamily: 'sm',
+                      fontSize: 14,
+                      height: 1.8,
+                    ),
+                    textAlign: TextAlign.justify,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _showProductProperties extends StatefulWidget {
+  List<ProductProperty> productProperties;
+  _showProductProperties({super.key, required this.productProperties});
+
+  @override
+  State<_showProductProperties> createState() => _showProductPropertiesState();
+}
+
+class _showProductPropertiesState extends State<_showProductProperties> {
+  bool _isVisible = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 44.0, vertical: 5),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isVisible = !_isVisible;
+              });
+            },
+            child: Container(
+              height: 46,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1, color: Mycolor.gery),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  children: [
+                    Image.asset('assets/images/icon_left_categroy.png'),
+                    SizedBox(width: 5),
+                    Text(
+                      'مشاهده',
+                      style: TextStyle(
+                        fontFamily: 'sb',
+                        fontSize: 12,
+                        color: Mycolor.blue,
+                      ),
+                    ),
+                    Spacer(),
+                    Text(
+                      ': مشخصات فنی',
+                      style: TextStyle(fontFamily: 'sm', fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 10),
+          Visibility(
+            visible: _isVisible,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(width: 1, color: Mycolor.gery),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18.0,
+                  vertical: 8,
+                ),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child:
+                      widget.productProperties == null ||
+                          widget.productProperties!.isEmpty
+                      ? Container(
+                          width: double.infinity,
+                          child: Text(
+                            "مشخصاتی فنی برای این محصول ثبت نشه است",
+                            style: TextStyle(fontFamily: 'sm', fontSize: 12),
+                          ),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: widget.productProperties!.map((prop) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 6,
+                                horizontal: 12,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // ستون عنوان
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      "${prop.title?.toString()}:" ?? "",
+                                      style: const TextStyle(
+                                        // fontWeight: FontWeight.w600,
+                                        fontFamily: 'sm',
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  // ستون مقدار
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(
+                                      prop.value?.toString() ?? "",
+                                      textAlign:
+                                          TextAlign.left, // یا TextAlign.start
+                                      style: const TextStyle(fontSize: 14),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class ProductVariantWidget extends StatelessWidget {
   final ProductVariant productVariant;
   ProductVariantWidget({Key? key, required this.productVariant})
@@ -382,8 +525,6 @@ class ProductVariantWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('====> productVariant: ${productVariant.variantType.toString()}');
-    print("====> productVariant: ${productVariant.variants.toString()}");
     return Padding(
       padding: const EdgeInsets.only(left: 44.0, right: 44, bottom: 10),
       child: Column(
@@ -474,7 +615,15 @@ class addToBasketButtom extends StatelessWidget {
 }
 
 class priceButtom extends StatelessWidget {
-  const priceButtom({super.key});
+  int? price;
+  int? discount_price;
+  int? real_price;
+  priceButtom({
+    Key? key,
+    required this.price,
+    required this.discount_price,
+    required this.real_price,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -518,7 +667,7 @@ class priceButtom extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '30,000,000',
+                          '${PriceFormatter.format(price ?? 0)}',
                           style: TextStyle(
                             decoration: TextDecoration.lineThrough,
                             decorationColor: Colors.white,
@@ -529,7 +678,7 @@ class priceButtom extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '30,000,000',
+                          '${PriceFormatter.format(real_price ?? 0)}',
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'SM',
@@ -551,7 +700,7 @@ class priceButtom extends StatelessWidget {
                           horizontal: 6,
                         ),
                         child: Text(
-                          '%3',
+                          '${PriceFormatter.discountPercent(price ?? 0, discount_price ?? 0)}%',
                           style: TextStyle(
                             fontFamily: 'sm',
                             fontSize: 12,

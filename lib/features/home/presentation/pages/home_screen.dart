@@ -34,11 +34,11 @@ class HomeView extends StatelessWidget {
               return CircularProgressIndicator();
             }
             if (state is HomeLoadFailure) {
-              print("home lode faill");
+              // print("home lode faill");
               return FailureStateWidget(
                 message: state.message,
                 onRetry: () {
-                  print('Home Refresh');
+                  // print('Home Refresh');
                   context.read<HomeBloc>().add(HomeRefreshed());
                 },
               );

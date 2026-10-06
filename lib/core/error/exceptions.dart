@@ -29,3 +29,16 @@ class UnauthorizedException extends AppException {
 class UnKnownException extends AppException {
   UnKnownException({required super.message});
 }
+
+//local
+class LocalStorageException implements Exception {
+  final String message;
+  final dynamic error;
+
+  LocalStorageException({required this.message, this.error});
+
+  @override
+  String toString() {
+    return 'LocalStorageException(message: $message, error: $error)';
+  }
+}

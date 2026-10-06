@@ -29,3 +29,10 @@ class UnknownFailure extends Failure {
     super.message = 'خطایی رخ داده است. لطفاً دوباره تلاش کنید.',
   });
 }
+
+class LocalStorageFailure extends Failure {
+  const LocalStorageFailure({
+    super.message =
+        'ذخیره‌سازی اطلاعات در دستگاه با مشکل مواجه شد. لطفاً دوباره تلاش کنید.',
+  });
+}

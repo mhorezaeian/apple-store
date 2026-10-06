@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/di/di.dart';
 import 'package:apple_store/features/product_category/presentation/pages/product_category_screen.dart';
-import 'package:apple_store/screens/basket_screen.dart';
+import 'package:apple_store/features/basket/presentation/pages/basket_screen.dart';
 import 'package:apple_store/features/home/presentation/pages/home_screen.dart';
 
 import 'package:apple_store/screens/profile_screen.dart';

@@ -13,7 +13,10 @@ abstract interface class ProductRepositiry {
   );
   Future<Either<Failure, List<Product>>> getHotestProducts();
   Future<Either<Failure, List<Product>>> getBestSellerProducts();
-  Future<Either<Failure, List<ProductVariant>>> getProductVaiients(
+  Future<Either<Failure, List<ProductVariant>>> getProductVarients(
     String productId,
+  );
+  Future<Either<Failure, List<Product>>> getProductsByCategory(
+    String caregoryId,
   );
 }

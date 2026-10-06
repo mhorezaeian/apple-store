@@ -11,4 +11,5 @@ abstract interface class ProductDatasource {
   Future<VariantTypeModel> getVariantType(String variantTypeId);
   Future<List<VariantModel>> getVariants(String productId);
   Future<ProductCategoryModel> getProductCategory(String productCategoryId);
+  Future<List<ProductModel>> getProductsByCategory(String caregoryId);
 }

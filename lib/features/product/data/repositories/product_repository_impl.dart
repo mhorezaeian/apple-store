@@ -97,17 +97,75 @@ class ProductRepositoryImpl implements ProductRepositiry {
     }
   }
 
+  // @override
+  // Future<Either<Failure, List<ProductVariant>>> getProductVarients(
+  //   String productId,
+  // ) async {
+  //   try {
+  //     final Map<String, VariantTypeModel> variantTypes = {};
+
+  //     // دریافت تمام variant ها
+  //     final variants = await _datasource.getVariants(productId);
+
+  //     // دریافت type مربوط به هر variant
+  //     for (final variant in variants) {
+  //       final typeId = variant.type_id;
+
+  //       if (typeId == null) {
+  //         continue;
+  //       }
+
+  //       if (!variantTypes.containsKey(typeId)) {
+  //         final type = await _datasource.getVariantType(typeId);
+  //         variantTypes[typeId] = type;
+  //       }
+  //     }
+
+  //     // گروه‌بندی variant ها بر اساس type_id
+  //     final Map<String, ProductVariant> productVariants = {};
+
+  //     for (final variant in variants) {
+  //       final typeId = variant.type_id;
+
+  //       if (typeId == null) {
+  //         continue;
+  //       }
+
+  //       final productVariant = productVariants.putIfAbsent(
+  //         typeId,
+  //         () =>
+  //             ProductVariant(variantType: variantTypes[typeId]!, variants: []),
+  //       );
+
+  //       productVariant.variants.add(variant);
+  //     }
+
+  //     final result = productVariants.values.toList();
+
+  //     return Right(result);
+  //   } on NetworkException {
+  //     return left(NetworkFailure());
+  //   } on ServerException catch (e) {
+  //     return left(ServerFailure());
+  //   } on UnKnownException catch (e) {
+  //     return left(UnknownFailure(message: e.message.toString()));
+  //   } catch (e) {
+  //     return left(
+  //       UnknownFailure(message: '${e.toString()} in product variants!!'),
+  //     );
+  //   }
+  // }
   @override
-  Future<Either<Failure, List<ProductVariant>>> getProductVaiients(
+  Future<Either<Failure, List<ProductVariant>>> getProductVarients(
     String productId,
   ) async {
     try {
       final Map<String, VariantTypeModel> variantTypes = {};
 
-      // دریافت تمام variant ها
+      // دریافت تمام Variant های محصول از DataSource
       final variants = await _datasource.getVariants(productId);
 
-      // دریافت type مربوط به هر variant
+      // دریافت VariantType مربوط به هر Variant
       for (final variant in variants) {
         final typeId = variant.type_id;
 
@@ -117,15 +175,16 @@ class ProductRepositoryImpl implements ProductRepositiry {
 
         if (!variantTypes.containsKey(typeId)) {
           final type = await _datasource.getVariantType(typeId);
+
           variantTypes[typeId] = type;
         }
       }
 
-      // گروه‌بندی variant ها بر اساس type_id
+      // گروه‌بندی Variant ها بر اساس type_id
       final Map<String, ProductVariant> productVariants = {};
 
-      for (final variant in variants) {
-        final typeId = variant.type_id;
+      for (final variantModel in variants) {
+        final typeId = variantModel.type_id;
 
         if (typeId == null) {
           continue;
@@ -133,11 +192,13 @@ class ProductRepositoryImpl implements ProductRepositiry {
 
         final productVariant = productVariants.putIfAbsent(
           typeId,
-          () =>
-              ProductVariant(variantType: variantTypes[typeId]!, variants: []),
+          () => ProductVariant(
+            variantType: variantTypes[typeId]!.toEntity(),
+            variants: [],
+          ),
         );
 
-        productVariant.variants.add(variant);
+        productVariant.variants.add(variantModel.toEntity());
       }
 
       final result = productVariants.values.toList();
@@ -145,7 +206,7 @@ class ProductRepositoryImpl implements ProductRepositiry {
       return Right(result);
     } on NetworkException {
       return left(NetworkFailure());
-    } on ServerException catch (e) {
+    } on ServerException {
       return left(ServerFailure());
     } on UnKnownException catch (e) {
       return left(UnknownFailure(message: e.message.toString()));
@@ -168,7 +229,6 @@ class ProductRepositoryImpl implements ProductRepositiry {
     } on NetworkException catch (e) {
       return left(NetworkFailure());
     } on ServerException catch (e) {
-      print(e.toString());
       return left(ServerFailure());
     } on UnKnownException catch (e) {
       return left(UnknownFailure(message: e.message.toString()));
@@ -176,6 +236,30 @@ class ProductRepositoryImpl implements ProductRepositiry {
       return left(
         UnknownFailure(message: ' ${e.toString()} in  detail product'),
       );
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Product>>> getProductsByCategory(
+    String caregoryId,
+  ) async {
+    try {
+      final productModels = await _datasource.getProductsByCategory(caregoryId);
+
+      final products = productModels
+          .map((model) => model.toProductEntity())
+          .toList();
+
+      print(products);
+      return right(products);
+    } on NetworkException catch (e) {
+      return left(NetworkFailure());
+    } on ServerException catch (e) {
+      return left(ServerFailure());
+    } on UnKnownException catch (e) {
+      return left(UnknownFailure(message: e.message.toString()));
+    } catch (e) {
+      return left(UnknownFailure(message: ' ${e.toString()}fucking products'));
     }
   }
 }

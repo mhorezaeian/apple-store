@@ -83,6 +83,10 @@ class BasketItem extends StatelessWidget {
                                 Text(
                                   '46,000,000',
                                   style: TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationColor: Colors.grey,
+                                    decorationThickness: 3,
+
                                     fontFamily: 'sm',
                                     fontSize: 12,
                                   ),
@@ -114,9 +118,9 @@ class BasketItem extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Image.asset(
-                                              'assets/images/icon_options.png',
-                                            ),
+                                            // Image.asset(
+                                            //   'assets/images/icon_options.png',
+                                            // ),
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -167,9 +171,9 @@ class BasketItem extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            Image.asset(
-                                              'assets/images/icon_options.png',
-                                            ),
+                                            // Image.asset(
+                                            //   'assets/images/icon_options.png',
+                                            // ),
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                 left: 4.0,
@@ -238,53 +242,53 @@ class BasketItem extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(15),
-                                      border: BoxBorder.all(
-                                        width: 1,
-                                        color: Mycolor.gery,
-                                      ),
-                                    ),
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 6.0,
-                                          vertical: 4,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 5.0,
-                                                  ),
-                                              child: Text(
-                                                'ذخیره',
-                                                style: TextStyle(
-                                                  fontFamily: 'sm',
-                                                  fontSize: 10,
-                                                ),
-                                              ),
-                                            ),
+                                // Padding(
+                                //   padding: const EdgeInsets.only(left: 8.0),
+                                //   child: Container(
+                                //     decoration: BoxDecoration(
+                                //       borderRadius: BorderRadius.circular(15),
+                                //       border: BoxBorder.all(
+                                //         width: 1,
+                                //         color: Mycolor.gery,
+                                //       ),
+                                //     ),
+                                //     child: Center(
+                                //       child: Padding(
+                                //         padding: const EdgeInsets.symmetric(
+                                //           horizontal: 6.0,
+                                //           vertical: 4,
+                                //         ),
+                                //         child: Row(
+                                //           mainAxisAlignment:
+                                //               MainAxisAlignment.center,
+                                //           crossAxisAlignment:
+                                //               CrossAxisAlignment.center,
+                                //           children: [
+                                //             Padding(
+                                //               padding:
+                                //                   const EdgeInsets.symmetric(
+                                //                     horizontal: 5.0,
+                                //                   ),
+                                //               child: Text(
+                                //                 'ذخیره',
+                                //                 style: TextStyle(
+                                //                   fontFamily: 'sm',
+                                //                   fontSize: 10,
+                                //                 ),
+                                //               ),
+                                //             ),
 
-                                            Image.asset(
-                                              'assets/images/active_fav_product.png',
-                                              width: 15,
-                                              height: 15,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                //             Image.asset(
+                                //               'assets/images/active_fav_product.png',
+                                //               width: 15,
+                                //               height: 15,
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 8.0),
                                   child: Container(

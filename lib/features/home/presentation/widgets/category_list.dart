@@ -26,6 +26,7 @@ class CategoryList extends StatelessWidget {
                 ),
               ),
             ),
+            SizedBox(height: 12),
             Padding(
               padding: const EdgeInsets.only(right: 20.0),
               child: SizedBox(
@@ -35,11 +36,7 @@ class CategoryList extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: CategoryItem(
-                      name: categoryList[index].name!,
-                      color: categoryList[index].color!,
-                      iconUrl: categoryList[index].iconUrl!,
-                    ),
+                    child: CategoryItem(pCategory: categoryList[index]),
                   ),
                 ),
               ),
