@@ -1,5 +1,4 @@
 import 'package:apple_store/core/error/failures.dart';
-import 'package:apple_store/features/home/presentation/widgets/category_item.dart';
 import 'package:apple_store/features/product/domain/entities/Product_variant.dart';
 import 'package:apple_store/features/product/domain/entities/product_detail.dart';
 import 'package:apple_store/features/product/domain/entities/product_image.dart';
@@ -8,7 +7,6 @@ import 'package:apple_store/features/product/domain/repositories/product_gallery
 import 'package:apple_store/features/product/domain/repositories/product_property_repository.dart';
 import 'package:apple_store/features/product/domain/repositories/product_repositiry.dart';
 import 'package:apple_store/features/product_category/domain/entities/product_category.dart';
-import 'package:apple_store/features/product_category/domain/repositories/product_category_reposirory.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 

@@ -4,6 +4,8 @@ import 'package:apple_store/features/basket/data/datasources/basket_local_dataso
 import 'package:apple_store/features/basket/data/models/basket_item_model.dart';
 import 'package:apple_store/features/basket/data/repositories/basket_repository_impl.dart';
 import 'package:apple_store/features/basket/domain/repositories/basket_repository.dart';
+import 'package:apple_store/features/basket/domain/usecases/get_single_basket_item.dart';
+import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
 import 'package:apple_store/features/home/data/datasources/banner_datasource.dart';
 import 'package:apple_store/features/home/data/datasources/banner_remote_dataSource.dart';
 import 'package:apple_store/features/home/data/repositories/banner_repository_impl.dart';
@@ -40,6 +42,12 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:apple_store/features/basket/domain/usecases/add_to_basket.dart';
+import 'package:apple_store/features/basket/domain/usecases/get_basket.dart';
+import 'package:apple_store/features/basket/domain/usecases/update_basket_item.dart';
+import 'package:apple_store/features/basket/domain/usecases/remove_from_basket.dart';
+import 'package:apple_store/features/basket/domain/usecases/clear_basket.dart';
 
 var locator = GetIt.instance;
 Future<void> getItInit() async {
@@ -175,5 +183,42 @@ void _registerBasket() {
   // repository
   locator.registerLazySingleton<BasketRepository>(
     () => BasketRepositoryImpl(locator<BasketDatasource>()),
+  );
+
+  // UseCases
+  locator.registerLazySingleton<AddToBasket>(
+    () => AddToBasket(locator<BasketRepository>()),
+  );
+
+  locator.registerLazySingleton<GetBasket>(
+    () => GetBasket(locator<BasketRepository>()),
+  );
+
+  locator.registerLazySingleton<UpdateBasketItem>(
+    () => UpdateBasketItem(locator<BasketRepository>()),
+  );
+
+  locator.registerLazySingleton<RemoveFromBasket>(
+    () => RemoveFromBasket(locator<BasketRepository>()),
+  );
+
+  locator.registerLazySingleton<ClearBasket>(
+    () => ClearBasket(locator<BasketRepository>()),
+  );
+
+  locator.registerLazySingleton<GetSingleBasketItem>(
+    () => GetSingleBasketItem(locator<BasketRepository>()),
+  );
+
+  // ساخت BasketBloc
+  locator.registerFactory<BasketBloc>(
+    () => BasketBloc(
+      locator<AddToBasket>(),
+      locator<GetBasket>(),
+      locator<UpdateBasketItem>(),
+      locator<RemoveFromBasket>(),
+      locator<ClearBasket>(),
+      locator<GetSingleBasketItem>(),
+    ),
   );
 }

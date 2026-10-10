@@ -10,4 +10,9 @@ abstract interface class BasketDatasource {
   Future<void> removeFromBasket(String id);
 
   Future<void> clearBasket();
+
+  Future<BasketItemModel?> getSingleBasketItem(
+    String productId,
+    List<String?> variantIds,
+  );
 }

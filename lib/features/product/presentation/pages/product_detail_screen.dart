@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
+import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
 import 'package:apple_store/features/product/domain/entities/product_property.dart';
+import 'package:apple_store/features/product/domain/entities/variant.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,10 +30,15 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          locator.get<ProductBloc>()
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => locator.get<ProductBloc>()
             ..add(ProductStarted(productId: productId, categryId: categryId)),
+        ),
+
+        BlocProvider(create: (_) => locator<BasketBloc>()),
+      ],
       child: ShowProductDetailScreen(
         productId: productId,
         categryId: categryId,
@@ -40,7 +47,8 @@ class ProductDetailScreen extends StatelessWidget {
   }
 }
 
-class ShowProductDetailScreen extends StatelessWidget {
+//
+class ShowProductDetailScreen extends StatefulWidget {
   final String productId;
   final String categryId;
 
@@ -49,6 +57,32 @@ class ShowProductDetailScreen extends StatelessWidget {
     required this.productId,
     required this.categryId,
   });
+
+  @override
+  State<ShowProductDetailScreen> createState() =>
+      _ShowProductDetailScreenState();
+}
+
+class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
+  //
+  final Map<String, Variant> selectedVariants = {};
+
+  bool _variantsInitialized = false;
+
+  //
+  void initializeSelectedVariants(List<ProductVariant> productVariants) {
+    for (final productVariant in productVariants) {
+      final variants = productVariant.variants;
+
+      if (variants.isEmpty) continue;
+
+      final typeId = variants.first.typeId;
+
+      if (typeId == null) continue;
+
+      selectedVariants.putIfAbsent(typeId, () => variants.first);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +106,8 @@ class ShowProductDetailScreen extends StatelessWidget {
                       onRetry: () {
                         context.read<ProductBloc>().add(
                           ProductRefreshed(
-                            productId: productId,
-                            categryId: categryId,
+                            productId: widget.productId,
+                            categryId: widget.categryId,
                           ),
                         );
                       },
@@ -82,6 +116,109 @@ class ShowProductDetailScreen extends StatelessWidget {
                 ],
               );
             }
+            // if (state is ProductLoadSuccess) {
+            //   // انتخاب پیش‌فرض واریانت‌ها، فقط یک‌بار
+            //   if (!_variantsInitialized) {
+            //     initializeSelectedVariants(state.productVariants);
+            //     _variantsInitialized = true;
+
+            //     WidgetsBinding.instance.addPostFrameCallback((_) {
+            //       if (!mounted) return;
+
+            //       context.read<BasketBloc>().add(
+            //         BasketSingleItemRequested(
+            //           productId: widget.productId,
+            //           variantIds: selectedVariants.values
+            //               .map((variant) => variant.id)
+            //               .toList(),
+            //         ),
+            //       );
+            //     });
+            //   }
+
+            //   return Column(
+            //     children: [
+            //       ProductAppBar(title: '${state.productCategory.name}'),
+
+            //       Expanded(
+            //         child: CustomScrollView(
+            //           dragStartBehavior: DragStartBehavior.start,
+            //           slivers: [
+            //             SliverToBoxAdapter(
+            //               child: Text('${state.product.name}'),
+            //             ),
+
+            //             SliverToBoxAdapter(
+            //               child: GallaryWidget(
+            //                 imageUrl: state.product.imsgeUrl!,
+            //                 gallary: state.productGallery,
+            //                 rate: state.product.popularity ?? '1.1',
+            //               ),
+            //             ),
+
+            //             if (state.productVariants.isNotEmpty)
+            //               SliverToBoxAdapter(
+            //                 child: Column(
+            //                   children: state.productVariants.map((
+            //                     productVariant,
+            //                   ) {
+            //                     // شناسه گروه واریانت
+            //                     final typeId =
+            //                         productVariant.variantType?.id ??
+            //                         (productVariant.variants.isNotEmpty
+            //                             ? productVariant.variants.first.typeId
+            //                             : null);
+
+            //                     return ProductVariantWidget(
+            //                       productVariant: productVariant,
+
+            //                       // شناسه واریانت انتخاب‌شده در این گروه
+            //                       selectedVariantId: typeId == null
+            //                           ? null
+            //                           : selectedVariants[typeId]?.id,
+
+            //                       // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
+            //                       onVariantSelected: (variant) {
+            //                         final selectedTypeId =
+            //                             variant.typeId ?? typeId;
+
+            //                         if (selectedTypeId == null ||
+            //                             variant.id == null) {
+            //                           return;
+            //                         }
+
+            //                         setState(() {
+            //                           selectedVariants[selectedTypeId] =
+            //                               variant;
+            //                         });
+
+            //                         // جست‌وجوی همین ترکیب در سبد خرید
+            //                         context.read<BasketBloc>().add(
+            //                           BasketSingleItemRequested(
+            //                             productId: widget.productId,
+            //                             variantIds: selectedVariants.values
+            //                                 .map((variant) => variant.id)
+            //                                 .toList(),
+            //                           ),
+            //                         );
+            //                       },
+            //                     );
+            //                   }).toList(),
+            //                 ),
+            //               ),
+
+            //             // سایر بخش‌های مشخصات و توضیحات محصول را
+            //             // مثل قبل در این قسمت نگه دار.
+            //           ],
+            //         ),
+            //       ),
+
+            //       // بخش پایینی قیمت و دکمه سبد خرید
+            //       // فعلاً مثل کد قبلی خودت باقی بماند.
+            //     ],
+            //   );
+            // }
+
             if (state is ProductLoadSuccess) {
               return Column(
                 children: [
@@ -121,13 +258,63 @@ class ShowProductDetailScreen extends StatelessWidget {
                               children: state.productVariants.map((
                                 productVariant,
                               ) {
+                                // شناسه گروه واریانت
+                                final typeId =
+                                    productVariant.variantType?.id ??
+                                    (productVariant.variants.isNotEmpty
+                                        ? productVariant.variants.first.typeId
+                                        : null);
+
                                 return ProductVariantWidget(
                                   productVariant: productVariant,
+
+                                  // شناسه واریانت انتخاب‌شده در این گروه
+                                  selectedVariantId: typeId == null
+                                      ? null
+                                      : selectedVariants[typeId]?.id,
+
+                                  // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
+                                  onVariantSelected: (variant) {
+                                    final selectedTypeId =
+                                        variant.typeId ?? typeId;
+
+                                    if (selectedTypeId == null ||
+                                        variant.id == null) {
+                                      return;
+                                    }
+
+                                    setState(() {
+                                      selectedVariants[selectedTypeId] =
+                                          variant;
+                                    });
+
+                                    // جست‌وجوی همین ترکیب در سبد خرید
+                                    context.read<BasketBloc>().add(
+                                      BasketSingleItemRequested(
+                                        productId: widget.productId,
+                                        variantIds: selectedVariants.values
+                                            .map((variant) => variant.id)
+                                            .toList(),
+                                      ),
+                                    );
+                                  },
                                 );
                               }).toList(),
                             ),
                           ),
 
+                        // SliverToBoxAdapter(
+                        //   child: Column(
+                        //     children: state.productVariants.map((
+                        //       productVariant,
+                        //     ) {
+                        //       return ProductVariantWidget(
+                        //         productVariant: productVariant,
+
+                        //       );
+                        //     }).toList(),
+                        //   ),
+                        // ),
                         SliverToBoxAdapter(
                           child: _showProductProperties(
                             productProperties: state.productProprtiers,
@@ -520,46 +707,74 @@ class _showProductPropertiesState extends State<_showProductProperties> {
 
 class ProductVariantWidget extends StatelessWidget {
   final ProductVariant productVariant;
-  ProductVariantWidget({Key? key, required this.productVariant})
-    : super(key: key);
+  final String? selectedVariantId;
+  final ValueChanged<Variant> onVariantSelected;
+
+  const ProductVariantWidget({
+    super.key,
+    required this.productVariant,
+    required this.selectedVariantId,
+    required this.onVariantSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isColor = productVariant.variantType?.type?.toLowerCase() == 'color';
+
     return Padding(
-      padding: const EdgeInsets.only(left: 44.0, right: 44, bottom: 10),
+      padding: const EdgeInsets.only(left: 44, right: 44, bottom: 10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
             productVariant.variantType?.title ?? 'ویژگی محصول',
-            style: TextStyle(fontFamily: 'sm', fontSize: 12),
+            style: const TextStyle(fontFamily: 'sm', fontSize: 12),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: productVariant.variants.map((variant) {
-              final isColor =
-                  productVariant.variantType!.type!.toLowerCase() == 'color';
+              final isSelected = variant.id == selectedVariantId;
 
-              return Container(
-                // width: 26,
-                height: 26,
-                margin: const EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
+              final Color variantColor = isColor
+                  ? Color(
+                      int.parse(
+                        'FF${(variant.value ?? 'FFFFFF').replaceAll('#', '')}',
+                        radix: 16,
+                      ),
+                    )
+                  : Colors.white;
+
+              return Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: InkWell(
                   borderRadius: BorderRadius.circular(8),
-                  color: isColor
-                      ? Color(int.parse('FF${variant.value}', radix: 16))
-                      : Colors.white,
-                ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Text(
-                      variant.name!,
-                      style: TextStyle(
-                        fontFamily: 'sm',
-                        fontSize: 13,
-                        color: isColor ? Colors.white : Colors.black,
+                  onTap: () {
+                    onVariantSelected(variant);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    height: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: variantColor,
+                      border: Border.all(
+                        color: isSelected ? Colors.blue : Colors.grey.shade300,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          variant.name ?? '',
+                          style: TextStyle(
+                            fontFamily: 'sm',
+                            fontSize: 13,
+                            // color: Colors.black,
+                            color: isColor ? Colors.white : Colors.black,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -572,6 +787,61 @@ class ProductVariantWidget extends StatelessWidget {
     );
   }
 }
+
+// class ProductVariantWidget extends StatelessWidget {
+//   final ProductVariant productVariant;
+//   ProductVariantWidget({Key? key, required this.productVariant})
+//     : super(key: key);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(left: 44.0, right: 44, bottom: 10),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.end,
+//         children: [
+//           Text(
+//             productVariant.variantType?.title ?? 'ویژگی محصول',
+//             style: TextStyle(fontFamily: 'sm', fontSize: 12),
+//           ),
+//           SizedBox(height: 10),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.end,
+//             children: productVariant.variants.map((variant) {
+//               final isColor =
+//                   productVariant.variantType!.type!.toLowerCase() == 'color';
+
+//               return Container(
+//                 // width: 26,
+//                 height: 26,
+//                 margin: const EdgeInsets.only(left: 10),
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(8),
+//                   color: isColor
+//                       ? Color(int.parse('FF${variant.value}', radix: 16))
+//                       : Colors.white,
+//                 ),
+//                 child: Center(
+//                   child: Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
+//                     child: Text(
+//                       variant.name!,
+//                       style: TextStyle(
+//                         fontFamily: 'sm',
+//                         fontSize: 13,
+//                         color: isColor ? Colors.white : Colors.black,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             }).toList(),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class addToBasketButtom extends StatelessWidget {
   const addToBasketButtom({super.key});

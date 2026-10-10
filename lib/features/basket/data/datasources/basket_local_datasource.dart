@@ -1,4 +1,5 @@
 import 'package:apple_store/core/error/exceptions.dart';
+import 'package:collection/collection.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:apple_store/features/basket/data/datasources/basket_datasource.dart';
@@ -64,6 +65,39 @@ class BasketLocalDataSource implements BasketDatasource {
     } catch (e) {
       throw LocalStorageException(
         message: 'Failed to clear basket from local storage.',
+        error: e,
+      );
+    }
+  }
+
+  @override
+  Future<BasketItemModel?> getSingleBasketItem(
+    String productId,
+    List<String?> variantIds,
+  ) async {
+    try {
+      final basketItems = await getBasket();
+
+      const equality = UnorderedIterableEquality<String?>();
+
+      for (final item in basketItems) {
+        if (item.productId != productId) continue;
+
+        final itemVariantIds = (item.variants ?? [])
+            .map((variant) => variant.id)
+            .toList();
+
+        if (equality.equals(itemVariantIds, variantIds)) {
+          return item;
+        }
+      }
+
+      return null;
+    } on LocalStorageException {
+      rethrow;
+    } catch (e) {
+      throw LocalStorageException(
+        message: 'Failed to get a single basket item from local storage.',
         error: e,
       );
     }

@@ -13,4 +13,9 @@ abstract class BasketRepository {
   Future<Either<Failure, void>> removeFromBasket(String id);
 
   Future<Either<Failure, void>> clearBasket();
+
+  Future<Either<Failure, BasketItem?>> getSingleBasketItem(
+    String productId,
+    List<String?> variantIds,
+  );
 }
