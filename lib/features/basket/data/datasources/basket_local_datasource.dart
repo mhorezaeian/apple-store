@@ -76,11 +76,9 @@ class BasketLocalDataSource implements BasketDatasource {
     List<String?> variantIds,
   ) async {
     try {
-      final basketItems = await getBasket();
-
       const equality = UnorderedIterableEquality<String?>();
 
-      for (final item in basketItems) {
+      for (final item in basketBox.values) {
         if (item.productId != productId) continue;
 
         final itemVariantIds = (item.variants ?? [])

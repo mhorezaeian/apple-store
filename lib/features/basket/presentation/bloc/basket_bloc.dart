@@ -18,6 +18,12 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
   final RemoveFromBasket _removeFromBasket;
   final ClearBasket _clearBasket;
   final GetSingleBasketItem _getSingleBasketItem;
+
+  /// When set, basket mutations refresh this product configuration instead of
+  /// loading the full basket (product detail flow).
+  String? _singleItemProductId;
+  List<String?>? _singleItemVariantIds;
+
   BasketBloc(
     this._addToBasket,
     this._getBasket,
@@ -27,10 +33,12 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
     this._getSingleBasketItem,
   ) : super(BasketInitial()) {
     on<BasketStarted>((event, emit) async {
+      _clearSingleItemContext();
       await _getBasketItems(emit);
     });
 
     on<BasketRefreshed>((event, emit) async {
+      _clearSingleItemContext();
       await _getBasketItems(emit);
     });
 
@@ -50,8 +58,35 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
       await _clearBasketItems(emit);
     });
     on<BasketSingleItemRequested>((event, emit) async {
+      _singleItemProductId = event.productId;
+      _singleItemVariantIds = List<String?>.from(event.variantIds);
       await _getSingleBasketItemData(emit, event.productId, event.variantIds);
     });
+  }
+
+  void _clearSingleItemContext() {
+    _singleItemProductId = null;
+    _singleItemVariantIds = null;
+  }
+
+  void _emitMutationFailure(Emitter<BasketState> emit, String message) {
+    if (_singleItemProductId != null && _singleItemVariantIds != null) {
+      emit(SingleBasketItemFailure(message));
+      return;
+    }
+    emit(BasketError(message));
+  }
+
+  Future<void> _refreshAfterMutation(Emitter<BasketState> emit) async {
+    if (_singleItemProductId != null && _singleItemVariantIds != null) {
+      await _getSingleBasketItemData(
+        emit,
+        _singleItemProductId!,
+        _singleItemVariantIds!,
+      );
+      return;
+    }
+    await _getBasketItems(emit);
   }
 
   Future<void> _getSingleBasketItemData(
@@ -94,10 +129,10 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
 
     result.fold(
       (failure) {
-        emit(BasketError(failure.message));
+        _emitMutationFailure(emit, failure.message);
       },
       (_) async {
-        await _getBasketItems(emit);
+        await _refreshAfterMutation(emit);
       },
     );
   }
@@ -110,10 +145,10 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
 
     result.fold(
       (failure) {
-        emit(BasketError(failure.message));
+        _emitMutationFailure(emit, failure.message);
       },
       (_) async {
-        await _getBasketItems(emit);
+        await _refreshAfterMutation(emit);
       },
     );
   }
@@ -123,10 +158,10 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
 
     result.fold(
       (failure) {
-        emit(BasketError(failure.message));
+        _emitMutationFailure(emit, failure.message);
       },
       (_) async {
-        await _getBasketItems(emit);
+        await _refreshAfterMutation(emit);
       },
     );
   }

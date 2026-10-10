@@ -1,7 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:ui';
 
+import 'package:apple_store/features/basket/domain/entities/basket_item.dart';
 import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
+import 'package:apple_store/features/product/domain/entities/product_detail.dart';
 import 'package:apple_store/features/product/domain/entities/product_property.dart';
 import 'package:apple_store/features/product/domain/entities/variant.dart';
 import 'package:flutter/gestures.dart';
@@ -76,7 +78,7 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
 
       if (variants.isEmpty) continue;
 
-      final typeId = variants.first.typeId;
+      final typeId = productVariant.variantType?.id ?? variants.first.typeId;
 
       if (typeId == null) continue;
 
@@ -84,401 +86,514 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
     }
   }
 
+  List<String?> _selectedVariantIds() {
+    return selectedVariants.values.map((variant) => variant.id).toList();
+  }
+
+  void _requestMatchingBasketItem() {
+    context.read<BasketBloc>().add(
+      BasketSingleItemRequested(
+        productId: widget.productId,
+        variantIds: _selectedVariantIds(),
+      ),
+    );
+  }
+
+  BasketItem _createBasketItemFromProduct(ProductDetail product) {
+    return BasketItem(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      discountPrice: product.discount_price,
+      thumbnail: product.imsgeUrl,
+      quantity: 1,
+      variants: selectedVariants.values.toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Mycolor.backgroundScreenColor,
-      body: SafeArea(
-        child: BlocBuilder<ProductBloc, ProductState>(
-          builder: (context, state) {
-            //
-            if (state is ProductLoadInProgress) {
-              return Center(child: CircularProgressIndicator());
-            }
-            if (state is ProductLoadFailure) {
-              return Column(
-                children: [
-                  ProductAppBar(title: 'محصول'),
+    return BlocListener<ProductBloc, ProductState>(
+      listenWhen: (previous, current) => current is ProductLoadSuccess,
+      listener: (context, state) {
+        if (state is! ProductLoadSuccess) {
+          return;
+        }
 
-                  Expanded(
-                    child: FailureStateWidget(
-                      message: state.message,
-                      onRetry: () {
-                        context.read<ProductBloc>().add(
-                          ProductRefreshed(
-                            productId: widget.productId,
-                            categryId: widget.categryId,
-                          ),
-                        );
-                      },
+        if (!_variantsInitialized) {
+          setState(() {
+            initializeSelectedVariants(state.productVariants);
+            _variantsInitialized = true;
+          });
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          _requestMatchingBasketItem();
+        });
+      },
+      child: Scaffold(
+        backgroundColor: Mycolor.backgroundScreenColor,
+        body: SafeArea(
+          child: BlocBuilder<ProductBloc, ProductState>(
+            builder: (context, state) {
+              //
+              if (state is ProductLoadInProgress) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (state is ProductLoadFailure) {
+                return Column(
+                  children: [
+                    ProductAppBar(title: 'محصول'),
+
+                    Expanded(
+                      child: FailureStateWidget(
+                        message: state.message,
+                        onRetry: () {
+                          context.read<ProductBloc>().add(
+                            ProductRefreshed(
+                              productId: widget.productId,
+                              categryId: widget.categryId,
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-            // if (state is ProductLoadSuccess) {
-            //   // انتخاب پیش‌فرض واریانت‌ها، فقط یک‌بار
-            //   if (!_variantsInitialized) {
-            //     initializeSelectedVariants(state.productVariants);
-            //     _variantsInitialized = true;
+                  ],
+                );
+              }
+              // if (state is ProductLoadSuccess) {
+              //   // انتخاب پیش‌فرض واریانت‌ها، فقط یک‌بار
+              //   if (!_variantsInitialized) {
+              //     initializeSelectedVariants(state.productVariants);
+              //     _variantsInitialized = true;
 
-            //     WidgetsBinding.instance.addPostFrameCallback((_) {
-            //       if (!mounted) return;
+              //     WidgetsBinding.instance.addPostFrameCallback((_) {
+              //       if (!mounted) return;
 
-            //       context.read<BasketBloc>().add(
-            //         BasketSingleItemRequested(
-            //           productId: widget.productId,
-            //           variantIds: selectedVariants.values
-            //               .map((variant) => variant.id)
-            //               .toList(),
-            //         ),
-            //       );
-            //     });
-            //   }
+              //       context.read<BasketBloc>().add(
+              //         BasketSingleItemRequested(
+              //           productId: widget.productId,
+              //           variantIds: selectedVariants.values
+              //               .map((variant) => variant.id)
+              //               .toList(),
+              //         ),
+              //       );
+              //     });
+              //   }
 
-            //   return Column(
-            //     children: [
-            //       ProductAppBar(title: '${state.productCategory.name}'),
+              //   return Column(
+              //     children: [
+              //       ProductAppBar(title: '${state.productCategory.name}'),
 
-            //       Expanded(
-            //         child: CustomScrollView(
-            //           dragStartBehavior: DragStartBehavior.start,
-            //           slivers: [
-            //             SliverToBoxAdapter(
-            //               child: Text('${state.product.name}'),
-            //             ),
+              //       Expanded(
+              //         child: CustomScrollView(
+              //           dragStartBehavior: DragStartBehavior.start,
+              //           slivers: [
+              //             SliverToBoxAdapter(
+              //               child: Text('${state.product.name}'),
+              //             ),
 
-            //             SliverToBoxAdapter(
-            //               child: GallaryWidget(
-            //                 imageUrl: state.product.imsgeUrl!,
-            //                 gallary: state.productGallery,
-            //                 rate: state.product.popularity ?? '1.1',
-            //               ),
-            //             ),
+              //             SliverToBoxAdapter(
+              //               child: GallaryWidget(
+              //                 imageUrl: state.product.imsgeUrl!,
+              //                 gallary: state.productGallery,
+              //                 rate: state.product.popularity ?? '1.1',
+              //               ),
+              //             ),
 
-            //             if (state.productVariants.isNotEmpty)
-            //               SliverToBoxAdapter(
-            //                 child: Column(
-            //                   children: state.productVariants.map((
-            //                     productVariant,
-            //                   ) {
-            //                     // شناسه گروه واریانت
-            //                     final typeId =
-            //                         productVariant.variantType?.id ??
-            //                         (productVariant.variants.isNotEmpty
-            //                             ? productVariant.variants.first.typeId
-            //                             : null);
+              //             if (state.productVariants.isNotEmpty)
+              //               SliverToBoxAdapter(
+              //                 child: Column(
+              //                   children: state.productVariants.map((
+              //                     productVariant,
+              //                   ) {
+              //                     // شناسه گروه واریانت
+              //                     final typeId =
+              //                         productVariant.variantType?.id ??
+              //                         (productVariant.variants.isNotEmpty
+              //                             ? productVariant.variants.first.typeId
+              //                             : null);
 
-            //                     return ProductVariantWidget(
-            //                       productVariant: productVariant,
+              //                     return ProductVariantWidget(
+              //                       productVariant: productVariant,
 
-            //                       // شناسه واریانت انتخاب‌شده در این گروه
-            //                       selectedVariantId: typeId == null
-            //                           ? null
-            //                           : selectedVariants[typeId]?.id,
+              //                       // شناسه واریانت انتخاب‌شده در این گروه
+              //                       selectedVariantId: typeId == null
+              //                           ? null
+              //                           : selectedVariants[typeId]?.id,
 
-            //                       // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
-            //                       onVariantSelected: (variant) {
-            //                         final selectedTypeId =
-            //                             variant.typeId ?? typeId;
+              //                       // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
+              //                       onVariantSelected: (variant) {
+              //                         final selectedTypeId =
+              //                             variant.typeId ?? typeId;
 
-            //                         if (selectedTypeId == null ||
-            //                             variant.id == null) {
-            //                           return;
-            //                         }
+              //                         if (selectedTypeId == null ||
+              //                             variant.id == null) {
+              //                           return;
+              //                         }
 
-            //                         setState(() {
-            //                           selectedVariants[selectedTypeId] =
-            //                               variant;
-            //                         });
+              //                         setState(() {
+              //                           selectedVariants[selectedTypeId] =
+              //                               variant;
+              //                         });
 
-            //                         // جست‌وجوی همین ترکیب در سبد خرید
-            //                         context.read<BasketBloc>().add(
-            //                           BasketSingleItemRequested(
-            //                             productId: widget.productId,
-            //                             variantIds: selectedVariants.values
-            //                                 .map((variant) => variant.id)
-            //                                 .toList(),
-            //                           ),
-            //                         );
-            //                       },
-            //                     );
-            //                   }).toList(),
-            //                 ),
-            //               ),
+              //                         // جست‌وجوی همین ترکیب در سبد خرید
+              //                         context.read<BasketBloc>().add(
+              //                           BasketSingleItemRequested(
+              //                             productId: widget.productId,
+              //                             variantIds: selectedVariants.values
+              //                                 .map((variant) => variant.id)
+              //                                 .toList(),
+              //                           ),
+              //                         );
+              //                       },
+              //                     );
+              //                   }).toList(),
+              //                 ),
+              //               ),
 
-            //             // سایر بخش‌های مشخصات و توضیحات محصول را
-            //             // مثل قبل در این قسمت نگه دار.
-            //           ],
-            //         ),
-            //       ),
+              //             // سایر بخش‌های مشخصات و توضیحات محصول را
+              //             // مثل قبل در این قسمت نگه دار.
+              //           ],
+              //         ),
+              //       ),
 
-            //       // بخش پایینی قیمت و دکمه سبد خرید
-            //       // فعلاً مثل کد قبلی خودت باقی بماند.
-            //     ],
-            //   );
-            // }
+              //       // بخش پایینی قیمت و دکمه سبد خرید
+              //       // فعلاً مثل کد قبلی خودت باقی بماند.
+              //     ],
+              //   );
+              // }
 
-            if (state is ProductLoadSuccess) {
-              return Column(
-                children: [
-                  //app bar
-                  ProductAppBar(title: '${state.productCategory.name}'),
-                  Expanded(
-                    child: CustomScrollView(
-                      dragStartBehavior: DragStartBehavior.start,
-                      slivers: [
-                        //app bar
-                        // SliverToBoxAdapter(
-                        //   child:
-                        // ),
+              if (state is ProductLoadSuccess) {
+                return Column(
+                  children: [
+                    //app bar
+                    ProductAppBar(title: '${state.productCategory.name}'),
+                    Expanded(
+                      child: CustomScrollView(
+                        dragStartBehavior: DragStartBehavior.start,
+                        slivers: [
+                          //app bar
+                          // SliverToBoxAdapter(
+                          //   child:
+                          // ),
 
-                        //title
-                        SliverToBoxAdapter(
-                          child: Text(
-                            '${state.product.name}',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontFamily: 'sb', fontSize: 16),
-                          ),
-                        ),
-
-                        // product gallary
-                        SliverToBoxAdapter(
-                          child: GallaryWidget(
-                            imageUrl: state.product.imsgeUrl!,
-                            gallary: state.productGallery,
-                            rate: state.product.popularity ?? '1.1',
-                          ),
-                        ),
-
-                        // product detail
-                        if (state.productVariants.isNotEmpty)
+                          //title
                           SliverToBoxAdapter(
-                            child: Column(
-                              children: state.productVariants.map((
-                                productVariant,
-                              ) {
-                                // شناسه گروه واریانت
-                                final typeId =
-                                    productVariant.variantType?.id ??
-                                    (productVariant.variants.isNotEmpty
-                                        ? productVariant.variants.first.typeId
-                                        : null);
-
-                                return ProductVariantWidget(
-                                  productVariant: productVariant,
-
-                                  // شناسه واریانت انتخاب‌شده در این گروه
-                                  selectedVariantId: typeId == null
-                                      ? null
-                                      : selectedVariants[typeId]?.id,
-
-                                  // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
-                                  onVariantSelected: (variant) {
-                                    final selectedTypeId =
-                                        variant.typeId ?? typeId;
-
-                                    if (selectedTypeId == null ||
-                                        variant.id == null) {
-                                      return;
-                                    }
-
-                                    setState(() {
-                                      selectedVariants[selectedTypeId] =
-                                          variant;
-                                    });
-
-                                    // جست‌وجوی همین ترکیب در سبد خرید
-                                    context.read<BasketBloc>().add(
-                                      BasketSingleItemRequested(
-                                        productId: widget.productId,
-                                        variantIds: selectedVariants.values
-                                            .map((variant) => variant.id)
-                                            .toList(),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }).toList(),
+                            child: Text(
+                              '${state.product.name}',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontFamily: 'sb', fontSize: 16),
                             ),
                           ),
 
-                        // SliverToBoxAdapter(
-                        //   child: Column(
-                        //     children: state.productVariants.map((
-                        //       productVariant,
-                        //     ) {
-                        //       return ProductVariantWidget(
-                        //         productVariant: productVariant,
-
-                        //       );
-                        //     }).toList(),
-                        //   ),
-                        // ),
-                        SliverToBoxAdapter(
-                          child: _showProductProperties(
-                            productProperties: state.productProprtiers,
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: _showProductDetail(
-                            productDetail: state.product.description,
-                          ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 44.0,
-                              vertical: 10,
+                          // product gallary
+                          SliverToBoxAdapter(
+                            child: GallaryWidget(
+                              imageUrl: state.product.imsgeUrl!,
+                              gallary: state.productGallery,
+                              rate: state.product.popularity ?? '1.1',
                             ),
-                            child: Container(
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  width: 1,
-                                  color: Mycolor.gery,
-                                ),
-                                borderRadius: BorderRadius.circular(15),
+                          ),
+
+                          // product detail
+                          if (state.productVariants.isNotEmpty)
+                            SliverToBoxAdapter(
+                              child: Column(
+                                children: state.productVariants.map((
+                                  productVariant,
+                                ) {
+                                  // شناسه گروه واریانت
+                                  final typeId =
+                                      productVariant.variantType?.id ??
+                                      (productVariant.variants.isNotEmpty
+                                          ? productVariant.variants.first.typeId
+                                          : null);
+
+                                  return ProductVariantWidget(
+                                    productVariant: productVariant,
+
+                                    // شناسه واریانت انتخاب‌شده در این گروه
+                                    selectedVariantId: typeId == null
+                                        ? null
+                                        : selectedVariants[typeId]?.id,
+
+                                    // هنگام انتخاب رنگ، حافظه یا سایر ویژگی‌ها
+                                    onVariantSelected: (variant) {
+                                      final selectedTypeId =
+                                          variant.typeId ?? typeId;
+
+                                      if (selectedTypeId == null ||
+                                          variant.id == null) {
+                                        return;
+                                      }
+
+                                      setState(() {
+                                        selectedVariants[selectedTypeId] =
+                                            variant;
+                                      });
+
+                                      _requestMatchingBasketItem();
+                                    },
+                                  );
+                                }).toList(),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10.0,
+                            ),
+
+                          // SliverToBoxAdapter(
+                          //   child: Column(
+                          //     children: state.productVariants.map((
+                          //       productVariant,
+                          //     ) {
+                          //       return ProductVariantWidget(
+                          //         productVariant: productVariant,
+
+                          //       );
+                          //     }).toList(),
+                          //   ),
+                          // ),
+                          SliverToBoxAdapter(
+                            child: _showProductProperties(
+                              productProperties: state.productProprtiers,
+                            ),
+                          ),
+                          SliverToBoxAdapter(
+                            child: _showProductDetail(
+                              productDetail: state.product.description,
+                            ),
+                          ),
+                          SliverToBoxAdapter(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 44.0,
+                                vertical: 10,
+                              ),
+                              child: Container(
+                                height: 46,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    width: 1,
+                                    color: Mycolor.gery,
+                                  ),
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
-                                child: Row(
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/icon_left_categroy.png',
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'مشاهده',
-                                      style: TextStyle(
-                                        fontFamily: 'sb',
-                                        fontSize: 12,
-                                        color: Mycolor.blue,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10.0,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Image.asset(
+                                        'assets/images/icon_left_categroy.png',
                                       ),
-                                    ),
-                                    Spacer(),
-                                    Stack(
-                                      clipBehavior: Clip.none,
-                                      children: [
-                                        Container(
-                                          width: 26,
-                                          height: 26,
-                                          margin: EdgeInsets.only(left: 10),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(
-                                              8,
-                                            ),
-                                            color: Colors.red,
-                                          ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'مشاهده',
+                                        style: TextStyle(
+                                          fontFamily: 'sb',
+                                          fontSize: 12,
+                                          color: Mycolor.blue,
                                         ),
-                                        Positioned(
-                                          right: 15,
-                                          child: Container(
+                                      ),
+                                      Spacer(),
+                                      Stack(
+                                        clipBehavior: Clip.none,
+                                        children: [
+                                          Container(
                                             width: 26,
                                             height: 26,
                                             margin: EdgeInsets.only(left: 10),
                                             decoration: BoxDecoration(
                                               borderRadius:
                                                   BorderRadius.circular(8),
-                                              color: Colors.blue,
+                                              color: Colors.red,
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          right: 30,
-                                          child: Container(
-                                            width: 26,
-                                            height: 26,
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.green,
+                                          Positioned(
+                                            right: 15,
+                                            child: Container(
+                                              width: 26,
+                                              height: 26,
+                                              margin: EdgeInsets.only(left: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                color: Colors.blue,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          right: 45,
-                                          child: Container(
-                                            width: 26,
-                                            height: 26,
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.black,
+                                          Positioned(
+                                            right: 30,
+                                            child: Container(
+                                              width: 26,
+                                              height: 26,
+                                              margin: EdgeInsets.only(left: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                color: Colors.green,
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        Positioned(
-                                          right: 60,
-                                          child: Container(
-                                            width: 26,
-                                            height: 26,
-                                            margin: EdgeInsets.only(left: 10),
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.grey,
+                                          Positioned(
+                                            right: 45,
+                                            child: Container(
+                                              width: 26,
+                                              height: 26,
+                                              margin: EdgeInsets.only(left: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                            child: Center(
-                                              child: Text(
-                                                '+10',
-                                                style: TextStyle(
-                                                  fontFamily: 'sb',
-                                                  fontSize: 12,
-                                                  color: Colors.white,
+                                          ),
+                                          Positioned(
+                                            right: 60,
+                                            child: Container(
+                                              width: 26,
+                                              height: 26,
+                                              margin: EdgeInsets.only(left: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                color: Colors.grey,
+                                              ),
+                                              child: Center(
+                                                child: Text(
+                                                  '+10',
+                                                  style: TextStyle(
+                                                    fontFamily: 'sb',
+                                                    fontSize: 12,
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                          left: 8.0,
                                         ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Text(
-                                        ':نظرات کاربران',
-                                        style: TextStyle(
-                                          fontFamily: 'sm',
-                                          fontSize: 14,
+                                        child: Text(
+                                          ':نظرات کاربران',
+                                          style: TextStyle(
+                                            fontFamily: 'sm',
+                                            fontSize: 14,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        // SliverToBoxAdapter(
-                        //   child:
-                        // ),
-                      ],
+                          // SliverToBoxAdapter(
+                          //   child:
+                          // ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        priceButtom(
-                          price: state.product.price,
-                          real_price: state.product.real_price,
-                          discount_price: state.product.discount_price,
-                        ),
-                        addToBasketButtom(),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          priceButtom(
+                            price: state.product.price,
+                            real_price: state.product.real_price,
+                            discount_price: state.product.discount_price,
+                          ),
+                          BlocBuilder<BasketBloc, BasketState>(
+                            buildWhen: (previous, current) =>
+                                current is SingleBasketItemSuccess ||
+                                current is SingleBasketItemFailure ||
+                                current is BasketInitial ||
+                                current is BasketError,
+                            builder: (context, basketState) {
+                              BasketItem? lineItem;
+                              if (basketState is SingleBasketItemSuccess) {
+                                lineItem = basketState.item;
+                              }
+
+                              final quantity = lineItem?.quantity ?? 0;
+                              if (lineItem == null || quantity < 1) {
+                                return AddToBasketButton(
+                                  onPressed: () {
+                                    context.read<BasketBloc>().add(
+                                      BasketItemAdded(
+                                        _createBasketItemFromProduct(
+                                          state.product,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
+                              }
+
+                              return ProductDetailQuantityControls(
+                                quantity: quantity,
+                                onIncrement: () {
+                                  context.read<BasketBloc>().add(
+                                    BasketItemAdded(
+                                      BasketItem(
+                                        productId: lineItem!.productId,
+                                        name: lineItem.name,
+                                        price: lineItem.price,
+                                        discountPrice: lineItem.discountPrice,
+                                        thumbnail: lineItem.thumbnail,
+                                        quantity: 1,
+                                        variants: lineItem.variants,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onDecrement: () {
+                                  final currentQuantity =
+                                      lineItem!.quantity ?? 1;
+                                  final itemId = lineItem.id;
+                                  if (itemId == null) {
+                                    return;
+                                  }
+                                  if (currentQuantity <= 1) {
+                                    context.read<BasketBloc>().add(
+                                      BasketItemRemoved(itemId),
+                                    );
+                                    return;
+                                  }
+                                  context.read<BasketBloc>().add(
+                                    BasketItemUpdated(
+                                      BasketItem(
+                                        id: lineItem.id,
+                                        productId: lineItem.productId,
+                                        name: lineItem.name,
+                                        price: lineItem.price,
+                                        discountPrice: lineItem.discountPrice,
+                                        thumbnail: lineItem.thumbnail,
+                                        quantity: currentQuantity - 1,
+                                        variants: lineItem.variants,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }
-            return const SizedBox.shrink();
-          },
+                  ],
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
@@ -843,8 +958,63 @@ class ProductVariantWidget extends StatelessWidget {
 //   }
 // }
 
-class addToBasketButtom extends StatelessWidget {
-  const addToBasketButtom({super.key});
+class AddToBasketButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const AddToBasketButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Stack(
+        alignment: AlignmentDirectional.bottomCenter,
+        children: [
+          Container(
+            width: 140,
+            height: 60,
+            decoration: BoxDecoration(
+              color: Mycolor.blueIndicator,
+              borderRadius: BorderRadius.circular(15),
+            ),
+          ),
+          ClipRRect(
+            borderRadius: BorderRadiusGeometry.circular(15),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: SizedBox(
+                width: 160,
+                height: 53,
+                child: Center(
+                  child: Text(
+                    'افزودن به سبد خرید',
+                    style: TextStyle(
+                      fontFamily: 'sb',
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ProductDetailQuantityControls extends StatelessWidget {
+  final int quantity;
+  final VoidCallback onIncrement;
+  final VoidCallback onDecrement;
+
+  const ProductDetailQuantityControls({
+    super.key,
+    required this.quantity,
+    required this.onIncrement,
+    required this.onDecrement,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -866,20 +1036,52 @@ class addToBasketButtom extends StatelessWidget {
             child: SizedBox(
               width: 160,
               height: 53,
-              child: Center(
-                child: Text(
-                  'افزودن به سبد خرید',
-                  style: TextStyle(
-                    fontFamily: 'sb',
-                    fontSize: 16,
-                    color: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _QuantityIconButton(
+                    icon: Icons.remove,
+                    onPressed: onDecrement,
                   ),
-                ),
+                  Text(
+                    '$quantity',
+                    style: const TextStyle(
+                      fontFamily: 'sb',
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  _QuantityIconButton(icon: Icons.add, onPressed: onIncrement),
+                ],
               ),
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _QuantityIconButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const _QuantityIconButton({required this.icon, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white24,
+      borderRadius: BorderRadius.circular(8),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: onPressed,
+        child: SizedBox(
+          width: 36,
+          height: 36,
+          child: Icon(icon, color: Colors.white, size: 22),
+        ),
+      ),
     );
   }
 }
