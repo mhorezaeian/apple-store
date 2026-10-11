@@ -5,7 +5,8 @@ import 'package:apple_store/features/basket/data/models/basket_item_model.dart';
 import 'package:apple_store/features/basket/data/repositories/basket_repository_impl.dart';
 import 'package:apple_store/features/basket/domain/repositories/basket_repository.dart';
 import 'package:apple_store/features/basket/domain/usecases/get_single_basket_item.dart';
-import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
+import 'package:apple_store/features/basket/presentation/bloc/BasketBloc/basket_bloc.dart';
+import 'package:apple_store/features/basket/presentation/bloc/ProductBasketBloc/product_basket_bloc.dart';
 import 'package:apple_store/features/home/data/datasources/banner_datasource.dart';
 import 'package:apple_store/features/home/data/datasources/banner_remote_dataSource.dart';
 import 'package:apple_store/features/home/data/repositories/banner_repository_impl.dart';
@@ -176,10 +177,11 @@ void _registerProduct() {
 
 //basket
 void _registerBasket() {
-  //datasource
+  // datasource
   locator.registerLazySingleton<BasketDatasource>(
     () => BasketLocalDataSource(basketBox: locator<Box<BasketItemModel>>()),
   );
+
   // repository
   locator.registerLazySingleton<BasketRepository>(
     () => BasketRepositoryImpl(locator<BasketDatasource>()),
@@ -210,7 +212,7 @@ void _registerBasket() {
     () => GetSingleBasketItem(locator<BasketRepository>()),
   );
 
-  // ساخت BasketBloc
+  // BasketBloc (صفحه سبد خرید) - ۵ پارامتر
   locator.registerFactory<BasketBloc>(
     () => BasketBloc(
       locator<AddToBasket>(),
@@ -218,6 +220,15 @@ void _registerBasket() {
       locator<UpdateBasketItem>(),
       locator<RemoveFromBasket>(),
       locator<ClearBasket>(),
+    ),
+  );
+
+  // ProductBasketBloc (دکمه سبد در صفحه محصول) - ۴ پارامتر
+  locator.registerFactory<ProductBasketBloc>(
+    () => ProductBasketBloc(
+      locator<AddToBasket>(),
+      locator<UpdateBasketItem>(),
+      locator<RemoveFromBasket>(),
       locator<GetSingleBasketItem>(),
     ),
   );

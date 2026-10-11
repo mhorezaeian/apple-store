@@ -45,17 +45,3 @@ class BasketItemRemoved extends BasketEvent {
 class BasketCleared extends BasketEvent {
   const BasketCleared();
 }
-
-// دریافت یک آیتم بر اساس محصول و ویژگی‌های انتخاب‌شده
-class BasketSingleItemRequested extends BasketEvent {
-  final String productId;
-  final List<String?> variantIds;
-
-  const BasketSingleItemRequested({
-    required this.productId,
-    required this.variantIds,
-  });
-
-  @override
-  List<Object?> get props => [productId, variantIds];
-}

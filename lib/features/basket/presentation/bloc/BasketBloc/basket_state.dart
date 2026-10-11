@@ -32,25 +32,3 @@ class BasketError extends BasketState {
   @override
   List<Object> get props => [message];
 }
-
-class SingleBasketItemInitial extends BasketState {
-  const SingleBasketItemInitial();
-}
-
-class SingleBasketItemSuccess extends BasketState {
-  final BasketItem? item;
-
-  const SingleBasketItemSuccess(this.item);
-
-  @override
-  List<Object?> get props => [item];
-}
-
-class SingleBasketItemFailure extends BasketState {
-  final String message;
-
-  const SingleBasketItemFailure(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}

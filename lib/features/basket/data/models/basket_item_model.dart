@@ -49,8 +49,8 @@ class BasketItemModel extends HiveObject {
       price: price,
       discountPrice: discountPrice,
       thumbnail: thumbnail,
-      quantity: quantity,
-      variants: variants?.map((variant) => variant.toEntity()).toList(),
+      quantity: quantity!,
+      variants: variants?.map((variant) => variant.toEntity()).toList() ?? [],
     );
   }
 

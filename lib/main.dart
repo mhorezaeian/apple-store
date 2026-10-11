@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/di/di.dart';
 import 'package:apple_store/features/product_category/presentation/pages/product_category_screen.dart';
-import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
+import 'package:apple_store/features/basket/presentation/bloc/BasketBloc/basket_bloc.dart';
 import 'package:apple_store/features/basket/presentation/pages/basket_screen.dart';
 import 'package:apple_store/features/home/presentation/pages/home_screen.dart';
 
@@ -27,10 +27,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int selectedScreen = 3;
+  late final BasketBloc _basketBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _basketBloc = locator<BasketBloc>()..add(const BasketStarted());
+  }
+
+  @override
+  void dispose() {
+    _basketBloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => locator<BasketBloc>()..add(const BasketStarted()),
+    return BlocProvider.value(
+      value: _basketBloc,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Scaffold(
@@ -47,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                     selectedScreen = index;
                   });
                   if (index == 1) {
-                    context.read<BasketBloc>().add(const BasketRefreshed());
+                    _basketBloc.add(const BasketRefreshed());
                   }
                 },
                 currentIndex: selectedScreen,

@@ -3,7 +3,7 @@ import 'package:apple_store/core/utils/price_formatter.dart';
 import 'package:apple_store/core/widgets/falilure_state_widget.dart';
 import 'package:apple_store/features/basket/domain/entities/basket_item.dart'
     as domain;
-import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
+import 'package:apple_store/features/basket/presentation/bloc/BasketBloc/basket_bloc.dart';
 import 'package:apple_store/features/basket/presentation/widgets/basket_item.dart';
 import 'package:apple_store/widgets/tittle_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -132,15 +132,19 @@ class BasketScreen extends StatelessWidget {
   }
 
   void _increment(BuildContext context, domain.BasketItem item) {
+    final id = item.id;
+    if (id == null) return;
+
     context.read<BasketBloc>().add(
-      BasketItemAdded(
+      BasketItemUpdated(
         domain.BasketItem(
+          id: id,
           productId: item.productId,
           name: item.name,
           price: item.price,
           discountPrice: item.discountPrice,
           thumbnail: item.thumbnail,
-          quantity: 1,
+          quantity: (item.quantity ?? 1) + 1,
           variants: item.variants,
         ),
       ),

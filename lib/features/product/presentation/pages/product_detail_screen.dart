@@ -2,7 +2,7 @@
 import 'dart:ui';
 
 import 'package:apple_store/features/basket/domain/entities/basket_item.dart';
-import 'package:apple_store/features/basket/presentation/bloc/basket_bloc.dart';
+import 'package:apple_store/features/basket/presentation/bloc/ProductBasketBloc/product_basket_bloc.dart';
 import 'package:apple_store/features/product/domain/entities/product_detail.dart';
 import 'package:apple_store/features/product/domain/entities/product_property.dart';
 import 'package:apple_store/features/product/domain/entities/variant.dart';
@@ -39,7 +39,7 @@ class ProductDetailScreen extends StatelessWidget {
             ..add(ProductStarted(productId: productId, categryId: categryId)),
         ),
 
-        BlocProvider(create: (_) => locator<BasketBloc>()),
+        BlocProvider(create: (_) => locator<ProductBasketBloc>()),
       ],
       child: ShowProductDetailScreen(
         productId: productId,
@@ -91,8 +91,8 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
   }
 
   void _requestMatchingBasketItem() {
-    context.read<BasketBloc>().add(
-      BasketSingleItemRequested(
+    context.read<ProductBasketBloc>().add(
+      ProductBasketRequested(
         productId: widget.productId,
         variantIds: _selectedVariantIds(),
       ),
@@ -510,24 +510,19 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
                             real_price: state.product.real_price,
                             discount_price: state.product.discount_price,
                           ),
-                          BlocBuilder<BasketBloc, BasketState>(
-                            buildWhen: (previous, current) =>
-                                current is SingleBasketItemSuccess ||
-                                current is SingleBasketItemFailure ||
-                                current is BasketInitial ||
-                                current is BasketError,
+                          BlocBuilder<ProductBasketBloc, ProductBasketState>(
                             builder: (context, basketState) {
-                              BasketItem? lineItem;
-                              if (basketState is SingleBasketItemSuccess) {
-                                lineItem = basketState.item;
-                              }
-
+                              final lineItem =
+                                  basketState is ProductBasketSuccess
+                                  ? basketState.item
+                                  : null;
                               final quantity = lineItem?.quantity ?? 0;
+
                               if (lineItem == null || quantity < 1) {
                                 return AddToBasketButton(
                                   onPressed: () {
-                                    context.read<BasketBloc>().add(
-                                      BasketItemAdded(
+                                    context.read<ProductBasketBloc>().add(
+                                      ProductBasketItemAdded(
                                         _createBasketItemFromProduct(
                                           state.product,
                                         ),
@@ -540,35 +535,8 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
                               return ProductDetailQuantityControls(
                                 quantity: quantity,
                                 onIncrement: () {
-                                  context.read<BasketBloc>().add(
-                                    BasketItemAdded(
-                                      BasketItem(
-                                        productId: lineItem!.productId,
-                                        name: lineItem.name,
-                                        price: lineItem.price,
-                                        discountPrice: lineItem.discountPrice,
-                                        thumbnail: lineItem.thumbnail,
-                                        quantity: 1,
-                                        variants: lineItem.variants,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                onDecrement: () {
-                                  final currentQuantity =
-                                      lineItem!.quantity ?? 1;
-                                  final itemId = lineItem.id;
-                                  if (itemId == null) {
-                                    return;
-                                  }
-                                  if (currentQuantity <= 1) {
-                                    context.read<BasketBloc>().add(
-                                      BasketItemRemoved(itemId),
-                                    );
-                                    return;
-                                  }
-                                  context.read<BasketBloc>().add(
-                                    BasketItemUpdated(
+                                  context.read<ProductBasketBloc>().add(
+                                    ProductBasketItemUpdated(
                                       BasketItem(
                                         id: lineItem.id,
                                         productId: lineItem.productId,
@@ -576,7 +544,33 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
                                         price: lineItem.price,
                                         discountPrice: lineItem.discountPrice,
                                         thumbnail: lineItem.thumbnail,
-                                        quantity: currentQuantity - 1,
+                                        quantity: quantity + 1,
+                                        variants: lineItem.variants,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                onDecrement: () {
+                                  final id = lineItem.id;
+                                  if (id == null) return;
+
+                                  if (quantity <= 1) {
+                                    context.read<ProductBasketBloc>().add(
+                                      ProductBasketItemRemoved(id),
+                                    );
+                                    return;
+                                  }
+
+                                  context.read<ProductBasketBloc>().add(
+                                    ProductBasketItemUpdated(
+                                      BasketItem(
+                                        id: lineItem.id,
+                                        productId: lineItem.productId,
+                                        name: lineItem.name,
+                                        price: lineItem.price,
+                                        discountPrice: lineItem.discountPrice,
+                                        thumbnail: lineItem.thumbnail,
+                                        quantity: quantity - 1,
                                         variants: lineItem.variants,
                                       ),
                                     ),
@@ -585,6 +579,82 @@ class _ShowProductDetailScreenState extends State<ShowProductDetailScreen> {
                               );
                             },
                           ),
+                          // BlocBuilder<BasketBloc, BasketState>(
+                          //   buildWhen: (previous, current) =>
+                          //       current is SingleBasketItemSuccess ||
+                          //       current is SingleBasketItemFailure ||
+                          //       current is BasketLoaded ||
+                          //       current is BasketInitial ||
+                          //       current is BasketError,
+                          //   builder: (context, basketState) {
+                          //     BasketItem? lineItem;
+                          //     if (basketState is SingleBasketItemSuccess) {
+                          //       lineItem = basketState.item;
+                          //     }
+
+                          //     final quantity = lineItem?.quantity ?? 0;
+                          //     if (lineItem == null || quantity < 1) {
+                          //       return AddToBasketButton(
+                          //         onPressed: () {
+                          //           context.read<BasketBloc>().add(
+                          //             BasketItemAdded(
+                          //               _createBasketItemFromProduct(
+                          //                 state.product,
+                          //               ),
+                          //             ),
+                          //           );
+                          //         },
+                          //       );
+                          //     }
+
+                          //     return ProductDetailQuantityControls(
+                          //       quantity: quantity,
+                          //       onIncrement: () {
+                          //         context.read<BasketBloc>().add(
+                          //           BasketItemAdded(
+                          //             BasketItem(
+                          //               productId: lineItem!.productId,
+                          //               name: lineItem.name,
+                          //               price: lineItem.price,
+                          //               discountPrice: lineItem.discountPrice,
+                          //               thumbnail: lineItem.thumbnail,
+                          //               quantity: 1,
+                          //               variants: lineItem.variants,
+                          //             ),
+                          //           ),
+                          //         );
+                          //       },
+                          //       onDecrement: () {
+                          //         final currentQuantity =
+                          //             lineItem!.quantity ?? 1;
+                          //         final itemId = lineItem.id;
+                          //         if (itemId == null) {
+                          //           return;
+                          //         }
+                          //         if (currentQuantity <= 1) {
+                          //           context.read<BasketBloc>().add(
+                          //             BasketItemRemoved(itemId),
+                          //           );
+                          //           return;
+                          //         }
+                          //         context.read<BasketBloc>().add(
+                          //           BasketItemUpdated(
+                          //             BasketItem(
+                          //               id: lineItem.id,
+                          //               productId: lineItem.productId,
+                          //               name: lineItem.name,
+                          //               price: lineItem.price,
+                          //               discountPrice: lineItem.discountPrice,
+                          //               thumbnail: lineItem.thumbnail,
+                          //               quantity: currentQuantity - 1,
+                          //               variants: lineItem.variants,
+                          //             ),
+                          //           ),
+                          //         );
+                          //       },
+                          //     );
+                          //   },
+                          // ),
                         ],
                       ),
                     ),

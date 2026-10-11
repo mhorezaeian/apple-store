@@ -79,6 +79,10 @@ class BasketLocalDataSource implements BasketDatasource {
       const equality = UnorderedIterableEquality<String?>();
 
       for (final item in basketBox.values) {
+        print(
+          'BOX ITEM: ${item.productId}, ${item.variants?.map((v) => v.id).toList()}',
+        );
+
         if (item.productId != productId) continue;
 
         final itemVariantIds = (item.variants ?? [])
