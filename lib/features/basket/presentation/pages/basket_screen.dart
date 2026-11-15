@@ -1,14 +1,17 @@
-import 'package:apple_store/core/constants/myColor.dart';
 import 'package:apple_store/core/utils/price_formatter.dart';
 import 'package:apple_store/core/widgets/falilure_state_widget.dart';
 import 'package:apple_store/features/basket/domain/entities/basket_item.dart'
     as domain;
 import 'package:apple_store/features/basket/presentation/bloc/BasketBloc/basket_bloc.dart';
 import 'package:apple_store/features/basket/presentation/widgets/basket_item.dart';
+import 'package:apple_store/features/payment/presentation/widgets/checkout_button.dart';
 import 'package:apple_store/widgets/tittle_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+/// صفحه سبد خرید.
+/// دیگر هیچ منطق پرداختی اینجا نیست: دکمه (CheckoutButton) به PaymentBloc می‌گوید
+/// «پرداخت را شروع کن» و نتیجه را PaymentEffectsListener در ریشه‌ی اپ مدیریت می‌کند.
 class BasketScreen extends StatelessWidget {
   const BasketScreen({super.key});
 
@@ -77,6 +80,7 @@ class BasketScreen extends StatelessWidget {
                         },
                       ),
                     ),
+                  // فضای خالی تا آیتم آخر زیر دکمه پنهان نشود
                   const SliverPadding(padding: EdgeInsets.only(bottom: 60)),
                 ],
               ),
@@ -88,39 +92,9 @@ class BasketScreen extends StatelessWidget {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
                   height: 53,
-                  child: ElevatedButton(
-                    onPressed: items.isEmpty ? null : () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Mycolor.green,
-                      disabledBackgroundColor: Mycolor.gery,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'ادامه فرآیند خرید',
-                          style: TextStyle(
-                            fontFamily: 'sb',
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                        if (items.isNotEmpty) ...[
-                          const SizedBox(width: 12),
-                          Text(
-                            '${PriceFormatter.format(total)} تومان',
-                            style: const TextStyle(
-                              fontFamily: 'sb',
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
+                  child: CheckoutButton(
+                    hasItems: items.isNotEmpty,
+                    total: total,
                   ),
                 ),
               ),
@@ -132,58 +106,31 @@ class BasketScreen extends StatelessWidget {
   }
 
   void _increment(BuildContext context, domain.BasketItem item) {
-    final id = item.id;
-    if (id == null) return;
+    if (item.id == null) return;
 
     context.read<BasketBloc>().add(
-      BasketItemUpdated(
-        domain.BasketItem(
-          id: id,
-          productId: item.productId,
-          name: item.name,
-          price: item.price,
-          discountPrice: item.discountPrice,
-          thumbnail: item.thumbnail,
-          quantity: (item.quantity ?? 1) + 1,
-          variants: item.variants,
-        ),
-      ),
+      BasketItemUpdated(item.copyWith(quantity: item.quantity + 1)),
     );
   }
 
   void _decrement(BuildContext context, domain.BasketItem item) {
     final itemId = item.id;
-    if (itemId == null) {
-      return;
-    }
+    if (itemId == null) return;
 
-    final currentQuantity = item.quantity ?? 1;
-    if (currentQuantity <= 1) {
+    // اگر تعداد ۱ بود، کاهش یعنی حذف
+    if (item.quantity <= 1) {
       context.read<BasketBloc>().add(BasketItemRemoved(itemId));
       return;
     }
 
     context.read<BasketBloc>().add(
-      BasketItemUpdated(
-        domain.BasketItem(
-          id: item.id,
-          productId: item.productId,
-          name: item.name,
-          price: item.price,
-          discountPrice: item.discountPrice,
-          thumbnail: item.thumbnail,
-          quantity: currentQuantity - 1,
-          variants: item.variants,
-        ),
-      ),
+      BasketItemUpdated(item.copyWith(quantity: item.quantity - 1)),
     );
   }
 
   void _remove(BuildContext context, domain.BasketItem item) {
     final itemId = item.id;
-    if (itemId == null) {
-      return;
-    }
+    if (itemId == null) return;
     context.read<BasketBloc>().add(BasketItemRemoved(itemId));
   }
 }

@@ -42,3 +42,19 @@ class LocalStorageException implements Exception {
     return 'LocalStorageException(message: $message, error: $error)';
   }
 }
+
+//payment
+/// خطای فنی ارتباط با درگاه پرداخت (فقط در لایه Data پرتاب می‌شود).
+/// const است چون در DataSource به شکل `throw const PaymentException(...)`
+/// داخل onTimeout استفاده می‌شود.
+class PaymentException implements Exception {
+  final String message;
+  final dynamic error;
+
+  const PaymentException({required this.message, this.error});
+
+  @override
+  String toString() {
+    return 'PaymentException(message: $message, error: $error)';
+  }
+}

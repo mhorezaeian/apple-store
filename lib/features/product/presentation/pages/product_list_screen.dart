@@ -49,7 +49,7 @@ class ShowProductListView extends StatelessWidget {
             } else if (state is ProductListLoadSuccess) {
               return Column(
                 children: [
-                  ProductAppBar(title: '${categpryTitle}'),
+                  ProductAppBar(title: ' ${categpryTitle}', hPadding: 33),
                   Expanded(child: _ProductList(productList: state.products)),
                 ],
               );
@@ -80,7 +80,7 @@ class _ProductList extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: 44),
+          padding: EdgeInsets.symmetric(horizontal: 33),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
               (context, index) {
@@ -89,10 +89,10 @@ class _ProductList extends StatelessWidget {
               childCount: productList.length, // ← این خط خیلی مهمه
             ),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              childAspectRatio: 2 / 2.8,
+              mainAxisExtent: 225, // ارتفاع ثابت هر کارت
               crossAxisCount: 2,
-              mainAxisSpacing: 20,
-              crossAxisSpacing: 20,
+              mainAxisSpacing: 5,
+              crossAxisSpacing: 5,
             ),
           ),
         ),

@@ -3,14 +3,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class ProductAppBar extends StatelessWidget {
-  ProductAppBar({super.key, required this.title});
+  ProductAppBar({super.key, required this.title, this.hPadding = 44});
   String title;
+  double hPadding;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        left: 44.0,
-        right: 44,
+      padding: EdgeInsets.only(
+        left: hPadding,
+        right: hPadding,
         bottom: 10,
         top: 12,
       ),

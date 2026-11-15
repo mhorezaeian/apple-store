@@ -50,6 +50,29 @@ import 'package:apple_store/features/basket/domain/usecases/update_basket_item.d
 import 'package:apple_store/features/basket/domain/usecases/remove_from_basket.dart';
 import 'package:apple_store/features/basket/domain/usecases/clear_basket.dart';
 
+import 'package:apple_store/core/config/payment_config.dart';
+import 'package:apple_store/core/services/deep_link_service.dart';
+// orders
+import 'package:apple_store/features/orders/data/datasources/order_datasource.dart';
+import 'package:apple_store/features/orders/data/datasources/order_local_datasource.dart';
+import 'package:apple_store/features/orders/data/models/order_model.dart';
+import 'package:apple_store/features/orders/data/repositories/order_repository_impl.dart';
+import 'package:apple_store/features/orders/domain/repositories/order_repository.dart';
+import 'package:apple_store/features/orders/domain/usecases/get_orders.dart';
+import 'package:apple_store/features/orders/domain/usecases/place_order.dart';
+import 'package:apple_store/features/orders/presentation/bloc/orders_bloc.dart';
+// payment
+import 'package:apple_store/features/payment/data/datasources/payment_remote_datasource.dart';
+import 'package:apple_store/features/payment/data/datasources/pending_payment_datasource.dart';
+import 'package:apple_store/features/payment/data/datasources/pending_payment_local_datasource.dart';
+import 'package:apple_store/features/payment/data/datasources/zarinpal_remote_datasource.dart';
+import 'package:apple_store/features/payment/data/models/pending_payment_model.dart';
+import 'package:apple_store/features/payment/data/repositories/payment_repository_impl.dart';
+import 'package:apple_store/features/payment/domain/repositories/payment_repository.dart';
+import 'package:apple_store/features/payment/domain/usecases/start_payment.dart';
+import 'package:apple_store/features/payment/domain/usecases/verify_payment.dart';
+import 'package:apple_store/features/payment/presentation/bloc/payment_bloc.dart';
+
 var locator = GetIt.instance;
 Future<void> getItInit() async {
   await _registerCorecomponenets();
@@ -58,6 +81,8 @@ Future<void> getItInit() async {
   _registerHome();
   _registerProduct();
   _registerBasket();
+  _registerOrders(); // جدید
+  _registerPayment();
 }
 
 //Core
@@ -72,16 +97,23 @@ Future<void> _registerCorecomponenets() async {
     await SharedPreferences.getInstance(),
   );
   // Hive
+  // Hive
   await Hive.initFlutter();
 
   Hive.registerAdapter(BasketItemModelAdapter());
   Hive.registerAdapter(VariantModelAdapter());
+  Hive.registerAdapter(OrderModelAdapter()); // جدید (typeId: 10)
+  Hive.registerAdapter(PendingPaymentModelAdapter()); // جدید (typeId: 11)
 
   final basketBox = await Hive.openBox<BasketItemModel>('basket_items_box');
-  // final variantBox = await Hive.openBox<VariantModel>('variant_box');
+  final ordersBox = await Hive.openBox<OrderModel>('orders_box');
+  final pendingPaymentBox = await Hive.openBox<PendingPaymentModel>(
+    'pending_payments_box',
+  );
 
   locator.registerSingleton<Box<BasketItemModel>>(basketBox);
-  // locator.registerSingleton<Box<VariantModel>>(variantBox);
+  locator.registerSingleton<Box<OrderModel>>(ordersBox);
+  locator.registerSingleton<Box<PendingPaymentModel>>(pendingPaymentBox);
 }
 
 //Auth
@@ -232,4 +264,78 @@ void _registerBasket() {
       locator<GetSingleBasketItem>(),
     ),
   );
+}
+
+//orders
+void _registerOrders() {
+  // datasource
+  locator.registerLazySingleton<OrderDatasource>(
+    () => OrderLocalDataSource(orderBox: locator<Box<OrderModel>>()),
+  );
+
+  // repository
+  locator.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(locator<OrderDatasource>()),
+  );
+
+  // UseCases
+  locator.registerLazySingleton<GetOrders>(
+    () => GetOrders(locator<OrderRepository>()),
+  );
+  locator.registerLazySingleton<PlaceOrder>(
+    () => PlaceOrder(locator<OrderRepository>(), locator<BasketRepository>()),
+  );
+
+  // bloc: هر بار که صفحه باز شود نمونه‌ی تازه
+  locator.registerFactory<OrdersBloc>(() => OrdersBloc(locator<GetOrders>()));
+}
+
+//payment
+void _registerPayment() {
+  // تنظیمات (Sandbox/واقعی) از --dart-define
+  locator.registerLazySingleton<PaymentConfig>(
+    () => PaymentConfig.fromEnvironment(),
+  );
+
+  // datasources
+  // برای عوض کردن درگاه، فقط همین یک ثبت عوض می‌شود
+  locator.registerLazySingleton<PaymentRemoteDatasource>(
+    () => ZarinpalRemoteDatasource(
+      locator<PaymentConfig>(),
+      Dio(
+        BaseOptions(
+          connectTimeout: const Duration(seconds: 15),
+          receiveTimeout: const Duration(seconds: 30),
+        ),
+      ),
+    ),
+  );
+  locator.registerLazySingleton<PendingPaymentDatasource>(
+    () => PendingPaymentLocalDataSource(
+      pendingBox: locator<Box<PendingPaymentModel>>(),
+    ),
+  );
+
+  // repository
+  locator.registerLazySingleton<PaymentRepository>(
+    () => PaymentRepositoryImpl(
+      remote: locator<PaymentRemoteDatasource>(),
+      local: locator<PendingPaymentDatasource>(),
+    ),
+  );
+
+  // UseCases
+  locator.registerLazySingleton<StartPayment>(
+    () =>
+        StartPayment(locator<BasketRepository>(), locator<PaymentRepository>()),
+  );
+  locator.registerLazySingleton<VerifyPayment>(
+    () => VerifyPayment(locator<PaymentRepository>(), locator<PlaceOrder>()),
+  );
+
+  // bloc و سرویس لینک: مالک آن‌ها MyApp است (مثل BasketBloc)
+  locator.registerFactory<PaymentBloc>(
+    () => PaymentBloc(locator<StartPayment>(), locator<VerifyPayment>()),
+  );
+  locator.registerFactory<DeepLinkService>(() => DeepLinkService());
 }
